@@ -1,0 +1,3 @@
+1. Docker command to stop all running containers
+2. How does the ticketmaster api work and how do I integrate it using node js and handlebars
+3. How should I create a card for each event from ticketmaster
