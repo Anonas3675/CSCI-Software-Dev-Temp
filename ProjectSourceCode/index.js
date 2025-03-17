@@ -20,9 +20,17 @@ const axios = require('axios'); // To make HTTP requests from our server. We'll 
 // create `ExpressHandlebars` instance and configure the layouts and partials dir.
 const hbs = handlebars.create({
   extname: 'hbs',
-  layoutsDir: __dirname + '/views/layouts',
-  partialsDir: __dirname + '/views/partials',
-});
+  layoutsDir: path.join(__dirname, 'src/views/layouts'),
+  partialsDir: path.join(__dirname, 'src/views/partials'),
+  helpers: {
+    json: function (context) {
+      return JSON.stringify(context);
+    }
+  }
+}); 
+
+//app.set('views', path.join(__dirname, 'views'));
+
 
 // database configuration
 const dbConfig = {
@@ -52,7 +60,8 @@ db.connect()
 // Register `hbs` as our view engine using its bound `engine()` function.
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'src/views'));
+
 app.use(bodyParser.json()); // specify the usage of JSON for parsing request body.
 
 // initialize session variables
@@ -69,6 +78,9 @@ app.use(
     extended: true,
   })
 );
+
+app.use(express.static('public'));
+
 
 // *****************************************************
 // <!-- Section 4 : API Routes -->
@@ -131,7 +143,7 @@ app.post('/login', async (req, res) => {
 
         req.session.user = user;
         req.session.save();
-        res.redirect('/game');
+        res.redirect('/home');
     } catch (err) {
         console.error('Login error:', err);
         res.render('pages/login', { message: 'Error logging in.', error: true });
@@ -149,6 +161,32 @@ app.get('/logout', (req, res) => {
 app.get('/game', auth, async (req, res) => {
     res.render('pages/game');
 });
+
+app.get('/home', (req, res) => {
+  res.render('pages/home', {
+      games: [
+          { name: "Wordle", link: "/wordle" },
+          { name: "GeoGuess", link: "/geoGuess" },
+          { name: "Memory Match", link: "/memory" },
+          { name: "Trivia", link: "/trivia" }
+      ]
+  });
+});
+
+app.get('/geoGuess', (req, res) => {
+  const locations = [
+      { name: "New York", file: "free hdr_map_811.jpg", lat: 40.7128, lon: -74.0060 },
+      { name: "Tokyo", file: "free hdri_sky_816.jpg", lat: 35.6895, lon: 139.6917 },
+      { name: "Paris", file: "hdri_sky_860.jpg", lat: 48.8566, lon: 2.3522 },
+      { name: "London", file: "hdri_sky_864.jpg", lat: 51.5074, lon: -0.1278 }
+  ];
+
+  console.log("Locations being sent:", locations);
+
+
+  res.render('pages/geoGuess', { locations });
+});
+
 
 
 
