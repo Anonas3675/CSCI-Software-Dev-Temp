@@ -1,4 +1,4 @@
-# CSCI-Software-Dev-Temp
+# CSCI-BuffGames
 Description:
 
 Contributors: Wilson Narog, Dylan Sandusky, Caden Davis, Ryan Natvig, Evan Feng, Logan Oran
