@@ -173,17 +173,13 @@ app.get('/home', (req, res) => {
   });
 });
 
-app.get('/geoGuess', (req, res) => {
+app.get('/geoGuess', auth, (req, res) => {
   const locations = [
-      { name: "New York", file: "free hdr_map_811.jpg", lat: 40.7128, lon: -74.0060 },
-      { name: "Tokyo", file: "free hdri_sky_816.jpg", lat: 35.6895, lon: 139.6917 },
-      { name: "Paris", file: "hdri_sky_860.jpg", lat: 48.8566, lon: 2.3522 },
-      { name: "London", file: "hdri_sky_864.jpg", lat: 51.5074, lon: -0.1278 }
+    { name: "Norlin Library", file: "norlin.jpg", lat: 40.0076, lon: -105.2697 },
+    { name: "UMC", file: "umc.jpg", lat: 40.0062, lon: -105.2684 },
+    { name: "Farrand Field", file: "farrand.jpg", lat: 40.0048, lon: -105.2644 },
+    { name: "Engineering Center", file: "engineering.jpg", lat: 40.0069, lon: -105.2627 }
   ];
-
-  console.log("Locations being sent:", locations);
-
-
   res.render('pages/geoGuess', { locations });
 });
 
