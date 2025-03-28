@@ -89,16 +89,35 @@ app.use(express.static('public'));
 // TODO - Include your API routes here
 
 
-const auth = (req, res, next) => {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
-    next();
-};
-
-
 app.get('/', (req, res) => {
     res.redirect('/login');
+});
+
+app.get('/login', (req, res) => {
+  res.render('pages/login');
+});
+
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+      const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+      if (!user) {
+          return res.render('pages/login', { message: 'Incorrect username or password.', error: true });
+      }
+
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+          return res.render('pages/login', { message: 'Incorrect username or password.', error: true });
+      }
+
+      req.session.user = user;
+      req.session.save();
+      res.redirect('/home');
+  } catch (err) {
+      console.error('Login error:', err);
+      res.render('pages/login', { message: 'Error logging in.', error: true });
+  }
 });
 
 app.get('/register', (req, res) => {
@@ -123,33 +142,6 @@ app.post('/register', async (req, res) => {
     }
 });
 
-app.get('/login', (req, res) => {
-    res.render('pages/login');
-});
-
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-
-    try {
-        const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
-        if (!user) {
-            return res.render('pages/login', { message: 'Incorrect username or password.', error: true });
-        }
-
-        const match = await bcrypt.compare(password, user.password);
-        if (!match) {
-            return res.render('pages/login', { message: 'Incorrect username or password.', error: true });
-        }
-
-        req.session.user = user;
-        req.session.save();
-        res.redirect('/home');
-    } catch (err) {
-        console.error('Login error:', err);
-        res.render('pages/login', { message: 'Error logging in.', error: true });
-    }
-});
-
 
 app.get('/logout', (req, res) => {
     req.session.destroy(() => {
@@ -158,16 +150,26 @@ app.get('/logout', (req, res) => {
 });
 
 
-app.get('/game', auth, async (req, res) => {
-    res.render('pages/game');
-});
 
-app.get('/home', (req, res) => {
+
+
+const auth = (req, res, next) => {
+  if (!req.session.user) {
+      return res.redirect('/login');
+  }
+  next();
+};
+
+app.use(auth)
+
+
+
+app.get('/home', auth, async (req, res) => {
   res.render('pages/home', {
       games: [
           { name: "Wordle", link: "/wordle" },
           { name: "GeoGuess", link: "/geoGuess" },
-          { name: "Memory Match", link: "/memory" },
+          { name: "Crossword", link: "/crossword" },
           { name: "Trivia", link: "/trivia" }
       ]
   });
