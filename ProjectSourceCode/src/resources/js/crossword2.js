@@ -1,0 +1,544 @@
+// Define the crossword grid structure
+// 0 = black cell, ' ' = empty cell to fill
+const gridData = [
+  [' ', ' ', ' ', ' ', '0', ' ', ' ', ' ', ' ', ' '],
+  [' ', '0', ' ', ' ', ' ', ' ', '0', ' ', ' ', ' '],
+  [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+  [' ', ' ', ' ', '0', ' ', ' ', ' ', ' ', '0', '0'],
+  ['0', '0', ' ', ' ', ' ', ' ', '0', ' ', ' ', ' '],
+  [' ', ' ', ' ', '0', ' ', ' ', ' ', ' ', ' ', ' '],
+  [' ', ' ', ' ', ' ', '0', ' ', ' ', ' ', '0', '0'],
+  [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+  [' ', ' ', ' ', '0', ' ', ' ', ' ', '0', ' ', ' '],
+  [' ', ' ', ' ', ' ', ' ', '0', ' ', ' ', ' ', ' ']
+];
+
+// Define the answers and clues
+const crosswordData = {
+  across: {
+    1: { answer: "JAVASCRIPT", clue: "Programming language commonly used for web development" },
+    6: { answer: "HTML", clue: "Markup language for creating web pages" },
+    8: { answer: "ARRAY", clue: "Data structure that stores elements in ordered list" },
+    9: { answer: "NODE", clue: "Runtime environment that executes JavaScript outside a browser" },
+    10: { answer: "CSS", clue: "Styling language for web pages" },
+    11: { answer: "API", clue: "Set of functions that allows applications to access data" },
+    13: { answer: "DOM", clue: "Programming interface for web documents" },
+    14: { answer: "REACT", clue: "JavaScript library for building user interfaces" },
+    17: { answer: "JSON", clue: "Lightweight data-interchange format" },
+    18: { answer: "SERVER", clue: "Computer program that provides functionality to other programs" }
+  },
+  down: {
+    1: { answer: "JSON", clue: "JavaScript Object Notation" },
+    2: { answer: "VARIABLE", clue: "Storage location paired with an identifier" },
+    3: { answer: "ASYNC", clue: "Allows operations to execute in parallel" },
+    4: { answer: "CSS", clue: "Cascading Style Sheets" },
+    5: { answer: "FUNCTION", clue: "Block of code designed to perform a particular task" },
+    7: { answer: "MONGODB", clue: "NoSQL document database" },
+    9: { answer: "NODEJS", clue: "JavaScript runtime built on Chrome's V8 engine" },
+    12: { answer: "PROMISE", clue: "Object representing the eventual completion of an async operation" },
+    15: { answer: "EVENT", clue: "Action that occurs as a result of the user or another source" },
+    16: { answer: "AJAX", clue: "Technique for accessing web servers from a web page" }
+  }
+};
+
+// Variables to keep track of the current state
+let selectedCell = null;
+let currentDirection = 'across';
+let currentClueNumber = null;
+
+// Initialize the crossword
+function initCrossword() {
+  const container = document.getElementById('crossword-container');
+  container.style.gridTemplateColumns = `repeat(${gridData[0].length}, 40px)`;
+  
+  // First pass: create the grid and determine cell numbers
+  let cellNumber = 1;
+  const cellNumbers = {};
+  
+  for (let row = 0; row < gridData.length; row++) {
+    for (let col = 0; col < gridData[row].length; col++) {
+      if (gridData[row][col] === '0') continue;
+      
+      const isStartOfAcross = col === 0 || gridData[row][col-1] === '0';
+      const isStartOfDown = row === 0 || gridData[row-1][col] === '0';
+      
+      const hasAcrossWord = isStartOfAcross && col < gridData[row].length - 1 && gridData[row][col+1] !== '0';
+      const hasDownWord = isStartOfDown && row < gridData.length - 1 && gridData[row+1][col] !== '0';
+      
+      if (hasAcrossWord || hasDownWord) {
+        cellNumbers[`${row}-${col}`] = cellNumber++;
+      }
+    }
+  }
+  
+  // Second pass: create the cells with input fields
+  for (let row = 0; row < gridData.length; row++) {
+    for (let col = 0; col < gridData[row].length; col++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.row = row;
+      cell.dataset.col = col;
+      
+      if (gridData[row][col] === '0') {
+        cell.classList.add('black');
+      } else {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 1;
+        input.dataset.row = row;
+        input.dataset.col = col;
+        
+        input.addEventListener('focus', handleCellFocus);
+        input.addEventListener('input', handleCellInput);
+        input.addEventListener('keydown', handleKeyDown);
+        
+        cell.appendChild(input);
+        
+        const cellNumberKey = `${row}-${col}`;
+        if (cellNumbers[cellNumberKey]) {
+          const numberSpan = document.createElement('span');
+          numberSpan.className = 'number';
+          numberSpan.textContent = cellNumbers[cellNumberKey];
+          cell.appendChild(numberSpan);
+          
+          // Store the clue number in the cell's dataset
+          cell.dataset.number = cellNumbers[cellNumberKey];
+        }
+      }
+      
+      container.appendChild(cell);
+    }
+  }
+  
+  // Populate clues
+  populateClues('across', crosswordData.across);
+  populateClues('down', crosswordData.down);
+  
+  // Add event listeners to clues
+  addCluesEventListeners();
+  
+  // Add button event listeners
+  document.getElementById('check-button').addEventListener('click', checkAnswers);
+  document.getElementById('reveal-button').addEventListener('click', revealSolution);
+  document.getElementById('reset-button').addEventListener('click', resetPuzzle);
+}
+
+function populateClues(direction, cluesData) {
+  const cluesContainer = document.getElementById(`${direction}-clues`);
+  
+  for (const number in cluesData) {
+    const clueDiv = document.createElement('div');
+    clueDiv.className = 'clue';
+    clueDiv.dataset.number = number;
+    clueDiv.dataset.direction = direction;
+    clueDiv.textContent = `${number}. ${cluesData[number].clue}`;
+    cluesContainer.appendChild(clueDiv);
+  }
+}
+
+function addCluesEventListeners() {
+  const clues = document.querySelectorAll('.clue');
+  clues.forEach(clue => {
+    clue.addEventListener('click', () => {
+      const number = clue.dataset.number;
+      const direction = clue.dataset.direction;
+      
+      highlightClue(number, direction);
+      focusFirstCellOfClue(number, direction);
+    });
+  });
+}
+
+function handleCellFocus(event) {
+  const row = parseInt(event.target.dataset.row);
+  const col = parseInt(event.target.dataset.col);
+  
+  // Find the cell that contains this input
+  const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+  
+  // Determine if this cell is the start of any clue
+  if (cell.dataset.number) {
+    // Check if it's the start of an across clue
+    const hasAcrossClue = col < gridData[row].length - 1 && gridData[row][col+1] !== '0';
+    // Check if it's the start of a down clue
+    const hasDownClue = row < gridData.length - 1 && gridData[row+1][col] !== '0';
+    
+    if (hasAcrossClue && hasDownClue) {
+      // If it's both, toggle between across and down
+      if (currentDirection === 'across' && currentClueNumber === cell.dataset.number) {
+        currentDirection = 'down';
+      } else {
+        currentDirection = 'across';
+      }
+      currentClueNumber = cell.dataset.number;
+    } else if (hasAcrossClue) {
+      currentDirection = 'across';
+      currentClueNumber = cell.dataset.number;
+    } else if (hasDownClue) {
+      currentDirection = 'down';
+      currentClueNumber = cell.dataset.number;
+    }
+  } else {
+    // If it's not the start of a clue, determine what clue it belongs to
+    findClueForCell(row, col);
+  }
+  
+  // Highlight the current clue
+  if (currentClueNumber) {
+    highlightClue(currentClueNumber, currentDirection);
+  }
+}
+
+function findClueForCell(row, col) {
+  // Find what across clue this cell belongs to
+  let acrossNumber = null;
+  for (let c = col; c >= 0; c--) {
+    if (gridData[row][c] === '0') break;
+    
+    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${c}"]`);
+    if (cell && cell.dataset.number) {
+      const num = cell.dataset.number;
+      if (crosswordData.across[num]) {
+        acrossNumber = num;
+        break;
+      }
+    }
+  }
+  
+  // Find what down clue this cell belongs to
+  let downNumber = null;
+  for (let r = row; r >= 0; r--) {
+    if (r < 0 || col < 0 || gridData[r][col] === '0') break;
+    
+    const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${col}"]`);
+    if (cell && cell.dataset.number) {
+      const num = cell.dataset.number;
+      if (crosswordData.down[num]) {
+        downNumber = num;
+        break;
+      }
+    }
+  }
+  
+  // Determine current direction and clue number
+  if (acrossNumber && downNumber) {
+    // If cell belongs to both across and down clues, keep the current direction if possible
+    if (currentDirection === 'across' && acrossNumber) {
+      currentClueNumber = acrossNumber;
+    } else if (currentDirection === 'down' && downNumber) {
+      currentClueNumber = downNumber;
+    } else {
+      currentDirection = 'across'; // Default to across
+      currentClueNumber = acrossNumber;
+    }
+  } else if (acrossNumber) {
+    currentDirection = 'across';
+    currentClueNumber = acrossNumber;
+  } else if (downNumber) {
+    currentDirection = 'down';
+    currentClueNumber = downNumber;
+  }
+}
+
+function highlightClue(number, direction) {
+  // Remove highlighting from all clues and cells
+  document.querySelectorAll('.clue').forEach(clue => clue.classList.remove('active'));
+  document.querySelectorAll('.cell input').forEach(input => input.parentElement.style.backgroundColor = 'white');
+  
+  // Highlight the selected clue in the clue list
+  const clueElement = document.querySelector(`.clue[data-number="${number}"][data-direction="${direction}"]`);
+  if (clueElement) {
+    clueElement.classList.add('active');
+  }
+  
+  // Find all cells that belong to this clue and highlight them
+  let startCell = null;
+  
+  // Find the starting cell for this clue
+  document.querySelectorAll('.cell').forEach(cell => {
+    if (cell.dataset.number === number) {
+      startCell = cell;
+    }
+  });
+  
+  if (!startCell) return;
+  
+  const startRow = parseInt(startCell.dataset.row);
+  const startCol = parseInt(startCell.dataset.col);
+  
+  if (direction === 'across') {
+    // Highlight the across clue
+    for (let col = startCol; col < gridData[startRow].length; col++) {
+      if (gridData[startRow][col] === '0') break;
+      highlightCell(startRow, col);
+    }
+  } else {
+    // Highlight the down clue
+    for (let row = startRow; row < gridData.length; row++) {
+      if (gridData[row][startCol] === '0') break;
+      highlightCell(row, startCol);
+    }
+  }
+}
+
+function highlightCell(row, col) {
+  const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+  if (cell) {
+    cell.style.backgroundColor = '#e6f7ff';
+  }
+}
+
+function focusFirstCellOfClue(number, direction) {
+  let startCell = null;
+  
+  // Find the starting cell for this clue
+  document.querySelectorAll('.cell').forEach(cell => {
+    if (cell.dataset.number === number) {
+      startCell = cell;
+    }
+  });
+  
+  if (startCell) {
+    const input = startCell.querySelector('input');
+    if (input) {
+      input.focus();
+    }
+  }
+  
+  currentDirection = direction;
+  currentClueNumber = number;
+}
+
+function handleCellInput(event) {
+  if (event.target.value) {
+    event.target.value = event.target.value.toUpperCase();
+    
+    // Move to the next cell
+    moveToNextCell();
+  }
+}
+
+function handleKeyDown(event) {
+  const row = parseInt(event.target.dataset.row);
+  const col = parseInt(event.target.dataset.col);
+  
+  switch (event.key) {
+    case 'ArrowRight':
+      moveFocus(row, col + 1);
+      event.preventDefault();
+      break;
+    case 'ArrowLeft':
+      moveFocus(row, col - 1);
+      event.preventDefault();
+      break;
+    case 'ArrowUp':
+      moveFocus(row - 1, col);
+      event.preventDefault();
+      break;
+    case 'ArrowDown':
+      moveFocus(row + 1, col);
+      event.preventDefault();
+      break;
+    case 'Backspace':
+      if (!event.target.value) {
+        // If the cell is empty, move to the previous cell
+        moveToPrevCell();
+        event.preventDefault();
+      }
+      break;
+    case 'Tab':
+      if (event.shiftKey) {
+        // Shift+Tab: move to the previous clue
+        moveToPrevClue();
+      } else {
+        // Tab: move to the next clue
+        moveToNextClue();
+      }
+      event.preventDefault();
+      break;
+    case ' ':
+      // Space: toggle direction
+      toggleDirection();
+      event.preventDefault();
+      break;
+  }
+}
+
+function moveFocus(row, col) {
+  // Check if the target cell is within bounds and not a black cell
+  if (row >= 0 && row < gridData.length && col >= 0 && col < gridData[row].length && gridData[row][col] !== '0') {
+    const input = document.querySelector(`input[data-row="${row}"][data-col="${col}"]`);
+    if (input) {
+      input.focus();
+    }
+  }
+}
+
+function moveToNextCell() {
+  const row = parseInt(selectedCell.dataset.row);
+  const col = parseInt(selectedCell.dataset.col);
+  
+  if (currentDirection === 'across') {
+    moveFocus(row, col + 1);
+  } else {
+    moveFocus(row + 1, col);
+  }
+}
+
+function moveToPrevCell() {
+  const row = parseInt(selectedCell.dataset.row);
+  const col = parseInt(selectedCell.dataset.col);
+  
+  if (currentDirection === 'across') {
+    moveFocus(row, col - 1);
+  } else {
+    moveFocus(row - 1, col);
+  }
+}
+
+function moveToNextClue() {
+  const clues = Array.from(document.querySelectorAll('.clue'));
+  const currentClueIndex = clues.findIndex(clue => 
+    clue.dataset.number === currentClueNumber && clue.dataset.direction === currentDirection
+  );
+  
+  if (currentClueIndex >= 0 && currentClueIndex < clues.length - 1) {
+    const nextClue = clues[currentClueIndex + 1];
+    highlightClue(nextClue.dataset.number, nextClue.dataset.direction);
+    focusFirstCellOfClue(nextClue.dataset.number, nextClue.dataset.direction);
+  }
+}
+
+function moveToPrevClue() {
+  const clues = Array.from(document.querySelectorAll('.clue'));
+  const currentClueIndex = clues.findIndex(clue => 
+    clue.dataset.number === currentClueNumber && clue.dataset.direction === currentDirection
+  );
+  
+  if (currentClueIndex > 0) {
+    const prevClue = clues[currentClueIndex - 1];
+    highlightClue(prevClue.dataset.number, prevClue.dataset.direction);
+    focusFirstCellOfClue(prevClue.dataset.number, prevClue.dataset.direction);
+  }
+}
+
+function toggleDirection() {
+  currentDirection = currentDirection === 'across' ? 'down' : 'across';
+  highlightClue(currentClueNumber, currentDirection);
+}
+
+function checkAnswers() {
+  let allCorrect = true;
+  const message = document.getElementById('message');
+  
+  // Check all cells
+  for (let row = 0; row < gridData.length; row++) {
+    for (let col = 0; col < gridData[row].length; col++) {
+      if (gridData[row][col] === '0') continue;
+      
+      const input = document.querySelector(`input[data-row="${row}"][data-col="${col}"]`);
+      if (input) {
+        const userValue = input.value.toUpperCase();
+        const correctValue = getCellCorrectValue(row, col);
+        
+        if (userValue !== correctValue) {
+          if (userValue !== '') {
+            input.style.color = 'red';
+            allCorrect = false;
+          } else {
+            allCorrect = false;
+          }
+        } else {
+          input.style.color = 'green';
+        }
+      }
+    }
+  }
+  
+  message.style.display = 'block';
+  if (allCorrect) {
+    message.textContent = 'Congratulations! All answers are correct!';
+    message.style.backgroundColor = '#4CAF50';
+  } else {
+    message.textContent = 'Some answers are incorrect. Keep trying!';
+    message.style.backgroundColor = '#f44336';
+  }
+  
+  setTimeout(() => {
+    message.style.display = 'none';
+  }, 3000);
+}
+
+function getCellCorrectValue(row, col) {
+  // We need to find which word this cell belongs to
+  for (const direction in crosswordData) {
+    for (const number in crosswordData[direction]) {
+      const answer = crosswordData[direction][number].answer;
+      const startCell = findStartCellByClueNumber(number);
+      
+      if (startCell) {
+        const startRow = parseInt(startCell.dataset.row);
+        const startCol = parseInt(startCell.dataset.col);
+        
+        if (direction === 'across') {
+          const offset = col - startCol;
+          if (row === startRow && offset >= 0 && offset < answer.length) {
+            return answer[offset];
+          }
+        } else if (direction === 'down') {
+          const offset = row - startRow;
+          if (col === startCol && offset >= 0 && offset < answer.length) {
+            return answer[offset];
+          }
+        }
+      }
+    }
+  }
+  return '';
+}
+
+function findStartCellByClueNumber(number) {
+  return document.querySelector(`.cell[data-number="${number}"]`);
+}
+
+function revealSolution() {
+  for (let row = 0; row < gridData.length; row++) {
+    for (let col = 0; col < gridData[row].length; col++) {
+      if (gridData[row][col] === '0') continue;
+      
+      const input = document.querySelector(`input[data-row="${row}"][data-col="${col}"]`);
+      if (input) {
+        const correctValue = getCellCorrectValue(row, col);
+        input.value = correctValue;
+        input.style.color = 'black';
+      }
+    }
+  }
+}
+
+function resetPuzzle() {
+  document.querySelectorAll('.cell input').forEach(input => {
+    input.value = '';
+    input.style.color = 'black';
+  });
+  
+  document.querySelectorAll('.clue').forEach(clue => {
+    clue.classList.remove('active');
+  });
+  
+  document.querySelectorAll('.cell').forEach(cell => {
+    cell.style.backgroundColor = 'white';
+  });
+  
+  document.getElementById('message').style.display = 'none';
+}
+
+// Add event listener for inputs
+document.addEventListener('focusin', (event) => {
+  if (event.target.tagName === 'INPUT') {
+    selectedCell = event.target;
+  }
+});
+
+// Initialize the crossword when the page loads
+document.addEventListener('DOMContentLoaded', initCrossword);

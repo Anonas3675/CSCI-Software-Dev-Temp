@@ -186,6 +186,11 @@ app.get('/geoGuess', auth, (req, res) => {
 });
 
 
+// API's for crossword puzzle
+
+app.get('/crossword', auth, (req, res) => {
+  res.render('pages/crossword')
+});
 
 
 
