@@ -78,7 +78,7 @@
 <div id="map-section" class="container text-center mt-4">
   <h2>Click the location on the CU Campus Map</h2>
   <div id="map-container">
-    <img id="campus-map" src="/resources/cu-campus-map.jpg" alt="CU Campus Map" />
+    <img id="campus-map" src="/resources/cu-campus-map.jpg" alt="CU Campus Map" /> 
   </div>
   <p id="result" class="mt-3 fw-bold"></p>
   <button id="back-btn" class="btn btn-secondary">Back to Panorama</button>
@@ -184,6 +184,15 @@
       resultEl.innerText = `❌ Not quite. You were ${distance.toFixed(2)} km away. Try again!`;
       resultEl.style.color = "red";
     }
+
+    fetch('/save-location', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat: clickedLat, lon: clickedLon })
+      })
+      .then(response => response.json())
+      .then(data => console.log('Saved:', data))
+      .catch(error => console.error('Error:', error));
   });
 </script>
 
