@@ -164,6 +164,33 @@
     const clickedLat = MAP_BOUNDS.maxLat - yRatio * (MAP_BOUNDS.maxLat - MAP_BOUNDS.minLat);
     const clickedLon = MAP_BOUNDS.minLon + xRatio * (MAP_BOUNDS.maxLon - MAP_BOUNDS.minLon);
 
+    //ADDED TO SHOW WHERE USER CLICKED FOR TROUBLE SHOOTING <=====>
+    const coordsDisplay = document.createElement('div');
+    coordsDisplay.className = 'clicked-coords';
+    coordsDisplay.style.position = 'absolute';
+    coordsDisplay.style.left = `${clickX}px`;
+    coordsDisplay.style.top = `${clickY}px`;
+    coordsDisplay.style.backgroundColor = 'rgba(0,0,0,0.7)';
+    coordsDisplay.style.color = 'white';
+    coordsDisplay.style.padding = '5px';
+    coordsDisplay.style.borderRadius = '3px';
+    coordsDisplay.style.fontSize = '12px';
+    coordsDisplay.style.transform = 'translate(-50%, -100%)';
+    coordsDisplay.style.marginTop = '-5px';
+    coordsDisplay.style.zIndex = '1000';
+    coordsDisplay.innerText = `Lat: ${clickedLat.toFixed(6)}, Lon: ${clickedLon.toFixed(6)}`;
+
+
+    
+    // Remove any existing coordinate displays
+    const existingCoords = document.querySelectorAll('.clicked-coords');
+    existingCoords.forEach(el => el.remove());
+    
+    // Add the new coordinate display
+    this.parentNode.appendChild(coordsDisplay);
+    //ADDED BY EVAN ^^^ <=====>
+
+
     const distance = haversineDistance(
       clickedLat, clickedLon,
       currentLocation.lat, currentLocation.lon
