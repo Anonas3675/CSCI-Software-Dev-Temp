@@ -1,0 +1,104 @@
+What year was CU founded?
+correct: 1876
+incorrect1: 1863
+incorrect2: 1907
+incorrect3: 1935
+Difficulty: 2
+
+What is CU’s mascot
+correct: Ralphie the Buffalo
+incorrect1: CAM the Ram
+incorrect2: Rocky the Mountain Lion
+incorrect3: Victor E. Bull
+Difficulty: 1
+
+What is the famous rock formation near CU boulder?
+correct: Flatirons
+incorrect1: Rocky Moutains
+incorrect2: Garden of the Gods
+incorrect3: Red Rocks
+Difficulty: 2
+
+What is the name of CU’s football Stadium?
+correct: Folsom Field
+incorrect1: Farrand Field
+incorrect2: Kittridge Field
+incorrect3: William's Field
+Difficulty: 2
+
+Who is CU’s head football coach
+Correct: Deion Sanders
+incorrect1: Jim Irsay
+incorrect2: Jim Harbaugh
+incorrect3: Tad Boyle
+Difficulty: 1
+
+What chant do students say during football games?
+Correct: SKO BUFFS
+incorrect1: Rock Chalk Jay Hawk
+incorrect2: GOOOO Buffaloes!
+incorrect3: STAMPEDE
+Difficulty: 2
+
+What is the name of CU’s marching band
+Correct: Golden Buffaloes
+incorrect1: Marching Buffaloes
+incorrect2: Black and Gold Buffaloes
+incorrect3: Chanting Buffaloes
+Difficulty: 3
+
+What is the name of CU’s library?
+Correct: Norlin Library
+incorrect1: Dawson Library
+incorrect2: Prime Library
+incorrect3: William Library
+Difficulty: 1
+
+What is the largest major in the school of Engineering (by students) at CU?
+Correct: Aerospace Engineering
+incorrect1: Computer Science
+incorrect2: Mechanical Engineering
+incorrect3: Electrical Engineering
+Difficulty: 2
+
+What school is CU’s biggest rival?
+Correct: Colorado State University
+incorrect1: University of Kansas
+incorrect2: University of Nebraska
+incorrect3: Colorado School of Mines
+Difficulty: 1
+
+Where is the largest collection of dorms within main campus?
+Correct: Kittridge 
+incorrect1:Old Main
+incorrect2: Central Campus
+incorrect3: William’s Village
+Difficulty: 1
+
+Where is the largest collection of dorms outside main campus?
+Correct: William’s Village
+incorrect1: Old Main
+incorrect2: East Campus
+incorrect3: Kittridge 
+Difficulty: 1
+
+What is the name of the oldest section of CU’s campus?
+correct: Old main
+incorrect1: East Campus
+incorrect2: Central Campus
+incorrect3: Old campus
+Difficulty: 2
+
+What is CU boulder’s Elevation?
+correct: 5,430 
+incorrect1: 5,280
+incorrect2: 5,060
+incorrect3: 5,120
+Difficulty: 3
+
+What Ski resort does boulder have free bus rides too?
+correct: Eldora
+incorrect1: Winter Park
+incorrect2: Keystone 
+incorrect3: Vail
+Difficulty: 2
