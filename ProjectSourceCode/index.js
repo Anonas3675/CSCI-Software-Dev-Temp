@@ -235,7 +235,6 @@ app.get('/geoGuess', async (req, res) => {
 });
 
 app.post('/save-location', async (req, res) => {
-  app.post('/save-location', async (req, res) => {
     const { lat, lon } = req.body;
   
     if (!lat || !lon) {
@@ -252,7 +251,6 @@ app.post('/save-location', async (req, res) => {
       console.error(err);
       res.status(500).json({ success: false, message: 'Database error: ' + err.message });
     }
-  });
 });
 
 app.get('/check-locations', async (req, res) => {
