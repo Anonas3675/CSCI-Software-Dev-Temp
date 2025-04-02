@@ -4,7 +4,7 @@
 INSERT INTO User_To_Backend (user_id) VALUES (1);
 
 -- User_Information
-INSERT INTO User_Information (username, user_id, password, email_address) VALUES ('example', 1, 'pword', 'example@gmail.com');
+INSERT INTO User_Information (username, user_id, password) VALUES ('example', 1, 'pword');
 
 -- User_Wordle_Stats
 INSERT INTO User_Wordle_Stats (user_id, successful_attempts, games_played, win_streak, highest_win_streak) 

@@ -10,8 +10,7 @@ DROP TABLE IF EXISTS User_Information;
 CREATE TABLE user_information (
     username VARCHAR(45) PRIMARY KEY,
     user_id INT UNIQUE,
-    password VARCHAR(45) NOT NULL,
-    email_address VARCHAR(45) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
