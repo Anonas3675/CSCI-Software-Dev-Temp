@@ -3,15 +3,15 @@
 DROP TABLE IF EXISTS User_To_Backend;
 CREATE TABLE User_To_Backend (
     user_id INT PRIMARY KEY
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
 -- Used as the main table holding user information
 DROP TABLE IF EXISTS User_Information;
 CREATE TABLE User_Information (
     username VARCHAR(45) PRIMARY KEY,
-    user_id INT UNIQUE,
+    user_id SERIAL PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
 
