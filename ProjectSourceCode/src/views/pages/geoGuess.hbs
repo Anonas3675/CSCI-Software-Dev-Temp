@@ -78,7 +78,7 @@
 <div id="map-section" class="container text-center mt-4">
   <h2>Click the location on the CU Campus Map</h2>
   <div id="map-container">
-    <img id="campus-map" src="/resources/cu-campus-map.jpg" alt="CU Campus Map" />
+    <img id="campus-map" src="/resources/cu-campus-map.jpg" alt="CU Campus Map" /> 
   </div>
   <p id="result" class="mt-3 fw-bold"></p>
   <button id="back-btn" class="btn btn-secondary">Back to Panorama</button>
@@ -164,6 +164,33 @@
     const clickedLat = MAP_BOUNDS.maxLat - yRatio * (MAP_BOUNDS.maxLat - MAP_BOUNDS.minLat);
     const clickedLon = MAP_BOUNDS.minLon + xRatio * (MAP_BOUNDS.maxLon - MAP_BOUNDS.minLon);
 
+    //ADDED TO SHOW WHERE USER CLICKED FOR TROUBLE SHOOTING <=====>
+    const coordsDisplay = document.createElement('div');
+    coordsDisplay.className = 'clicked-coords';
+    coordsDisplay.style.position = 'absolute';
+    coordsDisplay.style.left = `${clickX}px`;
+    coordsDisplay.style.top = `${clickY}px`;
+    coordsDisplay.style.backgroundColor = 'rgba(0,0,0,0.7)';
+    coordsDisplay.style.color = 'white';
+    coordsDisplay.style.padding = '5px';
+    coordsDisplay.style.borderRadius = '3px';
+    coordsDisplay.style.fontSize = '12px';
+    coordsDisplay.style.transform = 'translate(-50%, -100%)';
+    coordsDisplay.style.marginTop = '-5px';
+    coordsDisplay.style.zIndex = '1000';
+    coordsDisplay.innerText = `Lat: ${clickedLat.toFixed(6)}, Lon: ${clickedLon.toFixed(6)}`;
+
+
+    
+    // Remove any existing coordinate displays
+    const existingCoords = document.querySelectorAll('.clicked-coords');
+    existingCoords.forEach(el => el.remove());
+    
+    // Add the new coordinate display
+    this.parentNode.appendChild(coordsDisplay);
+    //ADDED BY EVAN ^^^ <=====>
+
+
     const distance = haversineDistance(
       clickedLat, clickedLon,
       currentLocation.lat, currentLocation.lon
@@ -184,6 +211,15 @@
       resultEl.innerText = `❌ Not quite. You were ${distance.toFixed(2)} km away. Try again!`;
       resultEl.style.color = "red";
     }
+
+    fetch('/save-location', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat: clickedLat, lon: clickedLon })
+      })
+      .then(response => response.json())
+      .then(data => console.log('Saved:', data))
+      .catch(error => console.error('Error:', error));
   });
 </script>
 
