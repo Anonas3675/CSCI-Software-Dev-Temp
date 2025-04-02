@@ -1,17 +1,17 @@
 -- Table used purely to store user ids and connect the user's information and leaderboards using the id
-DROP TABLE IF EXISTS user_to_backend;
-CREATE TABLE user_to_backend (
+DROP TABLE IF EXISTS User_To_Backend;
+CREATE TABLE User_To_Backend (
     user_id INT PRIMARY KEY
 );
 
 -- Used as the main table holding user information
-DROP TABLE IF EXISTS user_information;
-CREATE TABLE user_information (
+DROP TABLE IF EXISTS User_Information;
+CREATE TABLE User_Information (
     username VARCHAR(45) PRIMARY KEY,
     user_id INT UNIQUE,
     password VARCHAR(45) NOT NULL,
     email_address VARCHAR(45) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user_to_backend(user_id)
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
 -- Uses user_id from the User_information to show user wordle stats
@@ -22,7 +22,7 @@ CREATE TABLE User_Wordle_Stats (
     games_played INT,
     win_streak INT,
     highest_win_streak INT,
-    FOREIGN KEY (user_id) REFERENCES user_information(user_id)
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
 -- Uses user_id from the User_information to show user geoguesser stats
@@ -30,7 +30,7 @@ DROP TABLE IF EXISTS User_Geoguesser_Stats;
 CREATE TABLE User_Geoguesser_Stats (
     user_id INT PRIMARY KEY,
     highest_score INT,
-    FOREIGN KEY (user_id) REFERENCES user_information(user_id)
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
 -- Uses user_id from the User_information to show user trivia stats
@@ -39,7 +39,7 @@ CREATE TABLE User_Trivia_Stats (
     user_id INT PRIMARY KEY,
     current_streak INT,
     highest_streak INT,
-    FOREIGN KEY (user_id) REFERENCES user_information(user_id)
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
 -- Uses user_id from the User_information to show user crossword stats
@@ -47,43 +47,43 @@ DROP TABLE IF EXISTS User_Crossword_Stats;
 CREATE TABLE User_Crossword_Stats (
     user_id INT PRIMARY KEY,
     successful_attempts INT,
-    FOREIGN KEY (user_id) REFERENCES user_information(user_id)
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
--- Shows the leaderboard for geoguesser using user_id's from user_to_backend
+-- Shows the leaderboard for geoguesser using user_id's from User_To_Backend
 DROP TABLE IF EXISTS Geoguesser_Leaderboard;
 CREATE TABLE Geoguesser_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
     highscore INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user_to_backend(user_id)
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
--- Shows the leaderboard for trivia using user_id's from user_to_backend
+-- Shows the leaderboard for trivia using user_id's from User_To_Backend
 DROP TABLE IF EXISTS Trivia_Leaderboard;
 CREATE TABLE Trivia_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
     highest_streak INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user_to_backend(user_id)
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
--- Shows the leaderboard for wordle using user_id's from user_to_backend
+-- Shows the leaderboard for wordle using user_id's from User_To_Backend
 DROP TABLE IF EXISTS Wordle_Leaderboard;
 CREATE TABLE Wordle_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
     highest_streak INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user_to_backend(user_id)
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
--- Shows the leaderboard for crossword using user_id's from user_to_backend
+-- Shows the leaderboard for crossword using user_id's from User_To_Backend
 DROP TABLE IF EXISTS Crossword_Leaderboard;
 CREATE TABLE Crossword_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
     highest_streak INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user_to_backend(user_id)
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
 -- Stores the unique id for each crossword, which is used to access the independent rows and columns of the crossword
@@ -136,7 +136,7 @@ CREATE TABLE geoGuessrScoresTable (
     score INT NOT NULL,  -- Points awarded based on distance
     distance DECIMAL(6,2) NOT NULL,  -- How far they were (in km)
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES user_information(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id) ON DELETE CASCADE,
     FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
 );
 
