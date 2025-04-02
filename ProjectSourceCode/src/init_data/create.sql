@@ -122,11 +122,11 @@ CREATE TABLE Image_Bank (
 -- Stores information about each possible geoguesser location, alongside the image_id for each location
 DROP TABLE IF EXISTS locations;
 CREATE TABLE locations (
-    id SERIAL PRIMARY KEY,
+    location_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL, --Location Name
     image_file VARCHAR(255) NOT NULL,  -- image file name
     latitude DECIMAL(9,6) NOT NULL,  -- Latitude 
-    longitude DECIMAL(9,6) NOT NULL,  -- Longitude
+    longitude DECIMAL(9,6) NOT NULL  -- Longitude
 );
 DROP TABLE IF EXISTS geoGuessrScoresTable;
 CREATE TABLE geoGuessrScoresTable (
@@ -136,8 +136,8 @@ CREATE TABLE geoGuessrScoresTable (
     score INT NOT NULL,  -- Points awarded based on distance
     distance DECIMAL(6,2) NOT NULL,  -- How far they were (in km)
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES user_information(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
 );
 
 -- Stores valid 5-letter words which the user can input as an answer
