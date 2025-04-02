@@ -143,28 +143,50 @@ CREATE TABLE Crossword_Leaderboard (
     FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
--- Stores the unique id for each crossword, which is used to access the independent rows and columns of the crossword
-DROP TABLE IF EXISTS Crossword_Bank;
-CREATE TABLE Crossword_Bank (
-    crossword_id INT PRIMARY KEY
+-- Stores the unique id for each crossword puzzle
+DROP TABLE IF EXISTS Crossword_Puzzles CASCADE;
+CREATE TABLE Crossword_Puzzles (
+    puzzle_id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    rows INT NOT NULL,
+    columns INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  --Check if being made
 );
 
--- Holds the information for a single row of the crossword
-DROP TABLE IF EXISTS System_Crossword_Row_Control;
-CREATE TABLE System_Crossword_Row_Control (
-    crossword_id INT PRIMARY KEY,
-    row_number INT NOT NULL,
-    word VARCHAR(45) NOT NULL,
-    hint VARCHAR(200) NOT NULL,
-    FOREIGN KEY (crossword_id) REFERENCES Crossword_Bank(crossword_id)
+-- Stores the grid structure (black vs. fillable cells)
+DROP TABLE IF EXISTS Crossword_Grid CASCADE;
+CREATE TABLE Crossword_Grid (
+    grid_id SERIAL PRIMARY KEY,
+    puzzle_id INT NOT NULL,
+    row_index INT NOT NULL,
+    col_index INT NOT NULL,
+    is_black BOOLEAN NOT NULL DEFAULT FALSE,
+    cell_number INT NULL,
+    FOREIGN KEY (puzzle_id) REFERENCES Crossword_Puzzles(puzzle_id)
 );
 
--- Holds the information for a single column of the crossword
-DROP TABLE IF EXISTS System_Crossword_Column_Control;
-CREATE TABLE System_Crossword_Column_Control (
-    crossword_id INT PRIMARY KEY,
-    column_number INT NOT NULL,
-    word VARCHAR(45) NOT NULL,
-    hint VARCHAR(200) NOT NULL,
-    FOREIGN KEY (crossword_id) REFERENCES Crossword_Bank(crossword_id)
+-- Stores the clues and answers
+DROP TABLE IF EXISTS Crossword_Clues CASCADE;
+CREATE TABLE Crossword_Clues (
+    clue_id SERIAL PRIMARY KEY,
+    puzzle_id INT NOT NULL,
+    clue_number INT NOT NULL,
+    direction VARCHAR(6) NOT NULL CHECK (direction IN ('across', 'down')),
+    clue_text VARCHAR(200) NOT NULL,
+    answer VARCHAR(45) NOT NULL, 
+    start_row INT NOT NULL,
+    start_col INT NOT NULL,
+    FOREIGN KEY (puzzle_id) REFERENCES Crossword_Puzzles(puzzle_id)
+);
+
+-- Stores user progress on puzzles. Not sure if I'll implement this but might try later
+DROP TABLE IF EXISTS User_Puzzle_Progress CASCADE;
+CREATE TABLE User_Puzzle_Progress (
+    progress_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    puzzle_id INT NOT NULL,
+    row_index INT NOT NULL,
+    col_index INT NOT NULL,
+    user_letter CHAR(1) NULL,
+    FOREIGN KEY (puzzle_id) REFERENCES Crossword_Puzzles(puzzle_id)
 );
