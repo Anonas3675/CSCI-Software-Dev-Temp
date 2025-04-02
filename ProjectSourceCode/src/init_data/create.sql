@@ -2,12 +2,10 @@
 -- Table used purely to store user ids and connect the user's information and leaderboards using the id
 DROP TABLE IF EXISTS User_To_Backend;
 CREATE TABLE User_To_Backend (
-    user_id INT PRIMARY KEY
-);
 
 -- Used as the main table holding user information
 DROP TABLE IF EXISTS User_Information;
-CREATE TABLE User_Information (
+CREATE TABLE user_information (
     username VARCHAR(45) PRIMARY KEY,
     user_id INT UNIQUE,
     password VARCHAR(45) NOT NULL,
@@ -101,7 +99,7 @@ CREATE TABLE User_Trivia_Stats (
     user_id INT PRIMARY KEY,
     current_streak INT,
     highest_streak INT,
-    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
+    FOREIGN KEY (user_id) REFERENCES user_information(user_id)
 );
 
 -- Shows the leaderboard for trivia using user_id's from User_To_Backend
@@ -110,7 +108,7 @@ CREATE TABLE Trivia_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
     highest_streak INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
+    FOREIGN KEY (user_id) REFERENCES user_to_backend(user_id)
 );
 
 -- Stores information about trivia questions, including the question, the correct answer, incorrect answers, and the difficulty
@@ -135,13 +133,13 @@ CREATE TABLE User_Crossword_Stats (
     FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
--- Shows the leaderboard for crossword using user_id's from User_To_Backend
+-- Shows the leaderboard for crossword using user_id's from user_to_backend
 DROP TABLE IF EXISTS Crossword_Leaderboard;
 CREATE TABLE Crossword_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
     highest_streak INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
+    FOREIGN KEY (user_id) REFERENCES user_to_backend(user_id)
 );
 
 -- Stores the unique id for each crossword, which is used to access the independent rows and columns of the crossword
