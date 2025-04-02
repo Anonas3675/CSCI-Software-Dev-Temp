@@ -152,12 +152,10 @@ app.post('/login', async (req, res) => {
   try {
       const user = await db.oneOrNone('SELECT * FROM User_Information WHERE username = $1', [username]);
       if (!user) {
-          return res.render('pages/login', { message: 'Incorrect username or password.', error: true });
       }
 
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
-          return res.render('pages/login', { message: 'Incorrect username or password.', error: true });
       }
 
       req.session.user = user;
