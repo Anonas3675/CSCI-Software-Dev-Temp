@@ -45,8 +45,12 @@ VALUES (12345, 2, 'school', 'A place of education');
 -- Image_Bank
 INSERT INTO Image_Bank (image_id, image_location) VALUES (231, '../resources/images/<filename>');
 
--- Geoguesser_Location_Bank
---INSERT INTO Geoguesser_Location_Bank (location_id, name, coordinates, image_id) VALUES (3, 'Engineering Center', '<coordinates>', 231);
+-- Location
+INSERT INTO Geoguesser_Location_Bank (location_id, name, image_file, latitude, longitude) VALUES (3, 'Engineering Center', '<file name>', 10.0, 20.0);
+
+-- geoGuessrScoresTable
+INSERT INTO geoGuessrScoresTable (id, user_id, location_id, score, distance) 
+VALUES (1, 2, 3, 5000, 421.5);
 
 -- Wordle_Word_Bank
 INSERT INTO Wordle_Word_Bank (word) VALUES ('motor');
@@ -57,6 +61,3 @@ INSERT INTO System_Wordle_Control (date, answer, number_of_guesses) VALUES ('202
 -- Trivia_Question_Bank
 INSERT INTO Trivia_Question_Bank (question_id, question, correct_answer, incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, difficulty) 
 VALUES (1092, 'What year was The University of Colorado, Boulder, founded?', '1876', '1869', '1873', '1878', 2);
-
--- System_Geoguesser_Control
---INSERT INTO System_Geoguesser_Control (correct_location_id, user_current_score, current_round) VALUES (7, 3598, 4);
