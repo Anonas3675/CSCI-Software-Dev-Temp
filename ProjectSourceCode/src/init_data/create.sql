@@ -1,3 +1,4 @@
+--USER INFO
 -- Table used purely to store user ids and connect the user's information and leaderboards using the id
 DROP TABLE IF EXISTS User_To_Backend;
 CREATE TABLE User_To_Backend (
@@ -14,6 +15,50 @@ CREATE TABLE User_Information (
     FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
+
+--GEOGUESSR
+-- Uses user_id from the User_information to show user geoguessr stats
+DROP TABLE IF EXISTS User_Geoguessr_Stats;
+CREATE TABLE User_Geoguessr_Stats (
+    user_id INT PRIMARY KEY,
+    highest_score INT,
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
+);
+
+-- Shows the leaderboard for geoguessr using user_id's from User_To_Backend
+DROP TABLE IF EXISTS Geoguessr_Leaderboard;
+CREATE TABLE Geoguessr_Leaderboard (
+    user_id INT PRIMARY KEY,
+    username VARCHAR(45) NOT NULL,
+    highscore INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
+);
+
+-- Stores information about each possible geoguessr location, alongside the image_id for each location
+DROP TABLE IF EXISTS Geo_Guessr_Location;
+CREATE TABLE Geo_Guessr_Location (
+    location_id INT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL, --Location Name
+    image_file VARCHAR(255) NOT NULL,  -- image file name
+    latitude DECIMAL(9,6) NOT NULL,  -- Latitude 
+    longitude DECIMAL(9,6) NOT NULL  -- Longitude
+);
+
+-- Stores the scores for geoguessr
+DROP TABLE IF EXISTS Geo_Guessr_Scores;
+CREATE TABLE Geo_Guessr_Scores (
+    id INT PRIMARY KEY,
+    user_id INT NOT NULL,
+    location_id INT NOT NULL,
+    score INT NOT NULL,  -- Points awarded based on distance
+    distance DECIMAL(6,2) NOT NULL,  -- How far they were (in km)
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (location_id) REFERENCES Geo_Guessr_Location(location_id) ON DELETE CASCADE
+);
+
+
+--WORDLE
 -- Uses user_id from the User_information to show user wordle stats
 DROP TABLE IF EXISTS User_Wordle_Stats;
 CREATE TABLE User_Wordle_Stats (
@@ -25,14 +70,31 @@ CREATE TABLE User_Wordle_Stats (
     FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
--- Uses user_id from the User_information to show user geoguesser stats
-DROP TABLE IF EXISTS User_Geoguesser_Stats;
-CREATE TABLE User_Geoguesser_Stats (
+-- Shows the leaderboard for wordle using user_id's from User_To_Backend
+DROP TABLE IF EXISTS Wordle_Leaderboard;
+CREATE TABLE Wordle_Leaderboard (
     user_id INT PRIMARY KEY,
-    highest_score INT,
-    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
+    username VARCHAR(45) NOT NULL,
+    highest_streak INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
+-- Stores valid 5-letter words which the user can input as an answer
+DROP TABLE IF EXISTS Wordle_Word_Bank;
+CREATE TABLE Wordle_Word_Bank (
+    word CHAR(5) PRIMARY KEY
+);
+
+-- Determines the correct 5-letter word for the daily wordle using the date, also holds the number of guesses the user has used
+DROP TABLE IF EXISTS System_Wordle_Control;
+CREATE TABLE System_Wordle_Control (
+    date DATE PRIMARY KEY,
+    answer CHAR(5) NOT NULL,
+    number_of_guesses INT
+);
+
+
+--TRIVIA
 -- Uses user_id from the User_information to show user trivia stats
 DROP TABLE IF EXISTS User_Trivia_Stats;
 CREATE TABLE User_Trivia_Stats (
@@ -40,23 +102,6 @@ CREATE TABLE User_Trivia_Stats (
     current_streak INT,
     highest_streak INT,
     FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
-);
-
--- Uses user_id from the User_information to show user crossword stats
-DROP TABLE IF EXISTS User_Crossword_Stats;
-CREATE TABLE User_Crossword_Stats (
-    user_id INT PRIMARY KEY,
-    successful_attempts INT,
-    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
-);
-
--- Shows the leaderboard for geoguesser using user_id's from User_To_Backend
-DROP TABLE IF EXISTS Geoguesser_Leaderboard;
-CREATE TABLE Geoguesser_Leaderboard (
-    user_id INT PRIMARY KEY,
-    username VARCHAR(45) NOT NULL,
-    highscore INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
 -- Shows the leaderboard for trivia using user_id's from User_To_Backend
@@ -68,13 +113,26 @@ CREATE TABLE Trivia_Leaderboard (
     FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
--- Shows the leaderboard for wordle using user_id's from User_To_Backend
-DROP TABLE IF EXISTS Wordle_Leaderboard;
-CREATE TABLE Wordle_Leaderboard (
+-- Stores information about trivia questions, including the question, the correct answer, incorrect answers, and the difficulty
+DROP TABLE IF EXISTS Trivia_Question_Bank;
+CREATE TABLE Trivia_Question_Bank (
+    question_id INT PRIMARY KEY,
+    question VARCHAR(200) NOT NULL,
+    correct_answer VARCHAR(45) NOT NULL,
+    incorrect_answer_1 VARCHAR(45) NOT NULL,
+    incorrect_answer_2 VARCHAR(45) NOT NULL,
+    incorrect_answer_3 VARCHAR(45) NOT NULL,
+    difficulty INT CHECK (difficulty < 4 AND difficulty > 0)
+);
+
+
+--CROSSWORD
+-- Uses user_id from the User_information to show user crossword stats
+DROP TABLE IF EXISTS User_Crossword_Stats;
+CREATE TABLE User_Crossword_Stats (
     user_id INT PRIMARY KEY,
-    username VARCHAR(45) NOT NULL,
-    highest_streak INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
+    successful_attempts INT,
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
 -- Shows the leaderboard for crossword using user_id's from User_To_Backend
@@ -110,58 +168,4 @@ CREATE TABLE System_Crossword_Column_Control (
     word VARCHAR(45) NOT NULL,
     hint VARCHAR(200) NOT NULL,
     FOREIGN KEY (crossword_id) REFERENCES Crossword_Bank(crossword_id)
-);
-
--- Stores the image_id and the file location of an image to use furing the geoguesser game
-DROP TABLE IF EXISTS Image_Bank;
-CREATE TABLE Image_Bank (
-    image_id INT PRIMARY KEY,
-    image_location VARCHAR(100) NOT NULL
-);
-
--- Stores information about each possible geoguesser location, alongside the image_id for each location
-DROP TABLE IF EXISTS locations;
-CREATE TABLE locations (
-    location_id INT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL, --Location Name
-    image_file VARCHAR(255) NOT NULL,  -- image file name
-    latitude DECIMAL(9,6) NOT NULL,  -- Latitude 
-    longitude DECIMAL(9,6) NOT NULL  -- Longitude
-);
-DROP TABLE IF EXISTS geoGuessrScoresTable;
-CREATE TABLE geoGuessrScoresTable (
-    id INT PRIMARY KEY,
-    user_id INT NOT NULL,
-    location_id INT NOT NULL,
-    score INT NOT NULL,  -- Points awarded based on distance
-    distance DECIMAL(6,2) NOT NULL,  -- How far they were (in km)
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES User_Information(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
-);
-
--- Stores valid 5-letter words which the user can input as an answer
-DROP TABLE IF EXISTS Wordle_Word_Bank;
-CREATE TABLE Wordle_Word_Bank (
-    word CHAR(5) PRIMARY KEY
-);
-
--- Determines the correct 5-letter word for the daily wordle using the date, also holds the number of guesses the user has used
-DROP TABLE IF EXISTS System_Wordle_Control;
-CREATE TABLE System_Wordle_Control (
-    date DATE PRIMARY KEY,
-    answer CHAR(5) NOT NULL,
-    number_of_guesses INT
-);
-
--- Stores information about trivia questions, including the question, the correct answer, incorrect answers, and the difficulty
-DROP TABLE IF EXISTS Trivia_Question_Bank;
-CREATE TABLE Trivia_Question_Bank (
-    question_id INT PRIMARY KEY,
-    question VARCHAR(200) NOT NULL,
-    correct_answer VARCHAR(45) NOT NULL,
-    incorrect_answer_1 VARCHAR(45) NOT NULL,
-    incorrect_answer_2 VARCHAR(45) NOT NULL,
-    incorrect_answer_3 VARCHAR(45) NOT NULL,
-    difficulty INT CHECK (difficulty < 4 AND difficulty > 0)
 );

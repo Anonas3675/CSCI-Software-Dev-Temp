@@ -10,8 +10,8 @@ INSERT INTO User_Information (username, user_id, password, email_address) VALUES
 INSERT INTO User_Wordle_Stats (user_id, successful_attempts, games_played, win_streak, highest_win_streak) 
 VALUES (1, 25, 32, 2, 8);
 
--- User_Geoguesser_Stats
-INSERT INTO User_Geoguesser_Stats (user_id, highest_score) VALUES (1, 5000);
+-- User_Geoguessr_Stats
+INSERT INTO User_Geoguessr_Stats (user_id, highest_score) VALUES (1, 5000);
 
 -- User_Trivia_Stats
 INSERT INTO User_Trivia_Stats (user_id, current_streak, highest_streak) VALUES (1, 6, 10);
@@ -19,8 +19,8 @@ INSERT INTO User_Trivia_Stats (user_id, current_streak, highest_streak) VALUES (
 -- User_Crossword_Stats
 INSERT INTO User_Crossword_Stats (user_id, successful_attempts) VALUES (1, 40);
 
--- Geoguesser_Leaderboard
-INSERT INTO Geoguesser_Leaderboard (user_id, username, highscore) VALUES (1, 'example', 5000);
+-- Geoguessr_Leaderboard
+INSERT INTO Geoguessr_Leaderboard (user_id, username, highscore) VALUES (1, 'example', 5000);
 
 -- Trivia_Leaderboard
 INSERT INTO Trivia_Leaderboard (user_id, username, highest_streak) VALUES (1, 'example', 10);
@@ -42,15 +42,12 @@ VALUES (12345, 1, 'example', 'A term illustrating a certain topic/thing');
 INSERT INTO System_Crossword_Column_Control (crossword_id, column_number, word, hint) 
 VALUES (12345, 2, 'school', 'A place of education');
 
--- Image_Bank
-INSERT INTO Image_Bank (image_id, image_location) VALUES (231, '../resources/images/<filename>');
+-- Geo_Guessr_Location
+INSERT INTO Geo_Guessr_Location (location_id, name, image_file, latitude, longitude) VALUES (3, 'Engineering Center', '<file name>', 10.0, 20.0);
 
--- Location
-INSERT INTO Geoguesser_Location_Bank (location_id, name, image_file, latitude, longitude) VALUES (3, 'Engineering Center', '<file name>', 10.0, 20.0);
-
--- geoGuessrScoresTable
-INSERT INTO geoGuessrScoresTable (id, user_id, location_id, score, distance) 
-VALUES (1, 2, 3, 5000, 421.5);
+-- Geo_Guessr_Scores
+INSERT INTO Geo_Guessr_Scores (id, user_id, location_id, score, distance) 
+VALUES (2, 1, 3, 5000, 421.5);
 
 -- Wordle_Word_Bank
 INSERT INTO Wordle_Word_Bank (word) VALUES ('motor');
