@@ -9,6 +9,8 @@ services:
       - ./src/init_data:/docker-entrypoint-initdb.d
   web:
     image: node:lts
+    #If user: 'node' does not work try either leaving the user blank or using the following line instead
+    #user: 'root'
     user: 'node'
     working_dir: /repository
     env_file: .env
