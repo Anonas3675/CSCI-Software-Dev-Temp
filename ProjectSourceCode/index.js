@@ -150,7 +150,7 @@ app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-      const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+      const user = await db.oneOrNone('SELECT * FROM User_Information WHERE username = $1', [username]);
       if (!user) {
           return res.render('pages/login', { message: 'Incorrect username or password.', error: true });
       }
@@ -180,7 +180,7 @@ app.post('/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const query = 'INSERT INTO users (username, password) VALUES ($1, $2)';
+    const query = 'INSERT INTO User_Information (username, password) VALUES ($1, $2)';
 
     try {
         await db.none(query, [username, hashedPassword]);

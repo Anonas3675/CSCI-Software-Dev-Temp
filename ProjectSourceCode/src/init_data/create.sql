@@ -1,27 +1,171 @@
-CREATE TABLE users (
-    username VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(60) NOT NULL,
-    geoguessr_high_score INT DEFAULT 0,  -- Stores the best score in Geoguessr
+--USER INFO
+-- Table used purely to store user ids and connect the user's information and leaderboards using the id
+DROP TABLE IF EXISTS User_To_Backend;
+CREATE TABLE User_To_Backend (
+    user_id INT PRIMARY KEY
+);
+
+-- Used as the main table holding user information
+DROP TABLE IF EXISTS User_Information;
+CREATE TABLE user_information (
+    username VARCHAR(45) PRIMARY KEY,
+    user_id INT UNIQUE,
+    password VARCHAR(45) NOT NULL,
+    email_address VARCHAR(45) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
 );
 
 
-CREATE TABLE locations (
-    id SERIAL PRIMARY KEY,
+--GEOGUESSR
+-- Uses user_id from the User_information to show user geoguessr stats
+DROP TABLE IF EXISTS User_Geoguessr_Stats;
+CREATE TABLE User_Geoguessr_Stats (
+    user_id INT PRIMARY KEY,
+    highest_score INT,
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
+);
+
+-- Shows the leaderboard for geoguessr using user_id's from User_To_Backend
+DROP TABLE IF EXISTS Geoguessr_Leaderboard;
+CREATE TABLE Geoguessr_Leaderboard (
+    user_id INT PRIMARY KEY,
+    username VARCHAR(45) NOT NULL,
+    highscore INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
+);
+
+-- Stores information about each possible geoguessr location, alongside the image_id for each location
+DROP TABLE IF EXISTS Geo_Guessr_Location;
+CREATE TABLE Geo_Guessr_Location (
+    location_id INT PRIMARY KEY,
     name VARCHAR(255) NOT NULL, --Location Name
     image_file VARCHAR(255) NOT NULL,  -- image file name
     latitude DECIMAL(9,6) NOT NULL,  -- Latitude 
-    longitude DECIMAL(9,6) NOT NULL,  -- Longitude
+    longitude DECIMAL(9,6) NOT NULL  -- Longitude
 );
 
-
-CREATE TABLE geoGuessrScoresTable (
-    id SERIAL PRIMARY KEY,
+-- Stores the scores for geoguessr
+DROP TABLE IF EXISTS Geo_Guessr_Scores;
+CREATE TABLE Geo_Guessr_Scores (
+    id INT PRIMARY KEY,
     user_id INT NOT NULL,
     location_id INT NOT NULL,
     score INT NOT NULL,  -- Points awarded based on distance
     distance DECIMAL(6,2) NOT NULL,  -- How far they were (in km)
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (location_id) REFERENCES Geo_Guessr_Location(location_id) ON DELETE CASCADE
 );
 
+
+--WORDLE
+-- Uses user_id from the User_information to show user wordle stats
+DROP TABLE IF EXISTS User_Wordle_Stats;
+CREATE TABLE User_Wordle_Stats (
+    user_id INT PRIMARY KEY,
+    successful_attempts INT,
+    games_played INT,
+    win_streak INT,
+    highest_win_streak INT,
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
+);
+
+-- Shows the leaderboard for wordle using user_id's from User_To_Backend
+DROP TABLE IF EXISTS Wordle_Leaderboard;
+CREATE TABLE Wordle_Leaderboard (
+    user_id INT PRIMARY KEY,
+    username VARCHAR(45) NOT NULL,
+    highest_streak INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
+);
+
+-- Stores valid 5-letter words which the user can input as an answer
+DROP TABLE IF EXISTS Wordle_Word_Bank;
+CREATE TABLE Wordle_Word_Bank (
+    word CHAR(5) PRIMARY KEY
+);
+
+-- Determines the correct 5-letter word for the daily wordle using the date, also holds the number of guesses the user has used
+DROP TABLE IF EXISTS System_Wordle_Control;
+CREATE TABLE System_Wordle_Control (
+    date DATE PRIMARY KEY,
+    answer CHAR(5) NOT NULL,
+    number_of_guesses INT
+);
+
+
+--TRIVIA
+-- Uses user_id from the User_information to show user trivia stats
+DROP TABLE IF EXISTS User_Trivia_Stats;
+CREATE TABLE User_Trivia_Stats (
+    user_id INT PRIMARY KEY,
+    current_streak INT,
+    highest_streak INT,
+    FOREIGN KEY (user_id) REFERENCES user_information(user_id)
+);
+
+-- Shows the leaderboard for trivia using user_id's from User_To_Backend
+DROP TABLE IF EXISTS Trivia_Leaderboard;
+CREATE TABLE Trivia_Leaderboard (
+    user_id INT PRIMARY KEY,
+    username VARCHAR(45) NOT NULL,
+    highest_streak INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user_to_backend(user_id)
+);
+
+-- Stores information about trivia questions, including the question, the correct answer, incorrect answers, and the difficulty
+DROP TABLE IF EXISTS Trivia_Question_Bank;
+CREATE TABLE Trivia_Question_Bank (
+    question_id INT PRIMARY KEY,
+    question VARCHAR(200) NOT NULL,
+    correct_answer VARCHAR(45) NOT NULL,
+    incorrect_answer_1 VARCHAR(45) NOT NULL,
+    incorrect_answer_2 VARCHAR(45) NOT NULL,
+    incorrect_answer_3 VARCHAR(45) NOT NULL,
+    difficulty INT CHECK (difficulty < 4 AND difficulty > 0)
+);
+
+
+--CROSSWORD
+-- Uses user_id from the User_information to show user crossword stats
+DROP TABLE IF EXISTS User_Crossword_Stats;
+CREATE TABLE User_Crossword_Stats (
+    user_id INT PRIMARY KEY,
+    successful_attempts INT,
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
+);
+
+-- Shows the leaderboard for crossword using user_id's from user_to_backend
+DROP TABLE IF EXISTS Crossword_Leaderboard;
+CREATE TABLE Crossword_Leaderboard (
+    user_id INT PRIMARY KEY,
+    username VARCHAR(45) NOT NULL,
+    highest_streak INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user_to_backend(user_id)
+);
+
+-- Stores the unique id for each crossword, which is used to access the independent rows and columns of the crossword
+DROP TABLE IF EXISTS Crossword_Bank;
+CREATE TABLE Crossword_Bank (
+    crossword_id INT PRIMARY KEY
+);
+
+-- Holds the information for a single row of the crossword
+DROP TABLE IF EXISTS System_Crossword_Row_Control;
+CREATE TABLE System_Crossword_Row_Control (
+    crossword_id INT PRIMARY KEY,
+    row_number INT NOT NULL,
+    word VARCHAR(45) NOT NULL,
+    hint VARCHAR(200) NOT NULL,
+    FOREIGN KEY (crossword_id) REFERENCES Crossword_Bank(crossword_id)
+);
+
+-- Holds the information for a single column of the crossword
+DROP TABLE IF EXISTS System_Crossword_Column_Control;
+CREATE TABLE System_Crossword_Column_Control (
+    crossword_id INT PRIMARY KEY,
+    column_number INT NOT NULL,
+    word VARCHAR(45) NOT NULL,
+    hint VARCHAR(200) NOT NULL,
+    FOREIGN KEY (crossword_id) REFERENCES Crossword_Bank(crossword_id)
+);
