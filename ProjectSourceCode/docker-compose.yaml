@@ -11,8 +11,8 @@ services:
     image: node:lts
     #If user: 'node' does not work try either leaving the user blank or using the following line instead
     #user: 'root'
-    user: 'node'
-    working_dir: /repository
+    #user: 'node'
+    working_dir: /ProjectSourceCode
     env_file: .env
     environment:
       - NODE_ENV=development
@@ -21,7 +21,7 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./:/repository
+      - ./:/ProjectSourceCode/
     command: 'npm start'
 volumes:
   ProjectSourceCode:
