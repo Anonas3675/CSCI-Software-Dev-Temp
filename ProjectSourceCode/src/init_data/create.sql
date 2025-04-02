@@ -1,7 +1,7 @@
 -- Table used purely to store user ids and connect the user's information and leaderboards using the id
 DROP TABLE IF EXISTS user_to_backend;
 CREATE TABLE user_to_backend (
-    user_id SERIAL PRIMARY KEY
+    user_id INT PRIMARY KEY
 );
 
 -- Used as the main table holding user information
@@ -89,7 +89,7 @@ CREATE TABLE Crossword_Leaderboard (
 -- Stores the unique id for each crossword, which is used to access the independent rows and columns of the crossword
 DROP TABLE IF EXISTS Crossword_Bank;
 CREATE TABLE Crossword_Bank (
-    crossword_id SERIAL PRIMARY KEY
+    crossword_id INT PRIMARY KEY
 );
 
 -- Holds the information for a single row of the crossword
@@ -115,14 +115,14 @@ CREATE TABLE System_Crossword_Column_Control (
 -- Stores the image_id and the file location of an image to use furing the geoguesser game
 DROP TABLE IF EXISTS Image_Bank;
 CREATE TABLE Image_Bank (
-    image_id SERIAL PRIMARY KEY,
+    image_id INT PRIMARY KEY,
     image_location VARCHAR(100) NOT NULL
 );
 
 -- Stores information about each possible geoguesser location, alongside the image_id for each location
 DROP TABLE IF EXISTS locations;
 CREATE TABLE locations (
-    location_id SERIAL PRIMARY KEY,
+    location_id INT PRIMARY KEY,
     name VARCHAR(255) NOT NULL, --Location Name
     image_file VARCHAR(255) NOT NULL,  -- image file name
     latitude DECIMAL(9,6) NOT NULL,  -- Latitude 
@@ -130,7 +130,7 @@ CREATE TABLE locations (
 );
 DROP TABLE IF EXISTS geoGuessrScoresTable;
 CREATE TABLE geoGuessrScoresTable (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY,
     user_id INT NOT NULL,
     location_id INT NOT NULL,
     score INT NOT NULL,  -- Points awarded based on distance
