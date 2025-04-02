@@ -11,7 +11,7 @@ services:
     image: node:lts
     #If user: 'node' does not work try either leaving the user blank or using the following line instead
     #user: 'root'
-    user: 'node'
+    #user: 'node'
     working_dir: /repository
     env_file: .env
     environment:
