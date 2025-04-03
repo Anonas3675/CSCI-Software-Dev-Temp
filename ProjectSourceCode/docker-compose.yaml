@@ -21,7 +21,7 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./:/ProjectSourceCode/
-    command: 'npm start'
+      - ./:/ProjectSourceCode
+    command: 'npm run testandrun'
 volumes:
   ProjectSourceCode:
