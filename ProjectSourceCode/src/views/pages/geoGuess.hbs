@@ -45,7 +45,6 @@
       margin-top: 10px;
     }
 
-    /* Custom guess button styling */
     .psv-navbar {
       justify-content: center !important;
     }
@@ -98,10 +97,8 @@
 <script type="module">
   import { Viewer } from '@photo-sphere-viewer/core';
 
-  // Provided dynamically by the server
   const locations = {{{json locations}}};
 
-  // Adjust this based on your campus map image bounds
   const MAP_BOUNDS = {
     minLat: 40.005,
     maxLat: 40.010,
@@ -153,6 +150,9 @@
     resultEl.innerText = '';
   });
 
+  let currentRound = 0;
+  var guessedLoc = [];
+
   document.getElementById('campus-map').addEventListener('click', function (event) {
     const rect = this.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
@@ -164,7 +164,7 @@
     const clickedLat = MAP_BOUNDS.maxLat - yRatio * (MAP_BOUNDS.maxLat - MAP_BOUNDS.minLat);
     const clickedLon = MAP_BOUNDS.minLon + xRatio * (MAP_BOUNDS.maxLon - MAP_BOUNDS.minLon);
 
-    //ADDED TO SHOW WHERE USER CLICKED FOR TROUBLE SHOOTING <=====>
+    // Show clicked coords for debugging
     const coordsDisplay = document.createElement('div');
     coordsDisplay.className = 'clicked-coords';
     coordsDisplay.style.position = 'absolute';
@@ -180,46 +180,49 @@
     coordsDisplay.style.zIndex = '1000';
     coordsDisplay.innerText = `Lat: ${clickedLat.toFixed(6)}, Lon: ${clickedLon.toFixed(6)}`;
 
-
-    
-    // Remove any existing coordinate displays
+    // Remove previous coord displays
     const existingCoords = document.querySelectorAll('.clicked-coords');
     existingCoords.forEach(el => el.remove());
-    
-    // Add the new coordinate display
+
     this.parentNode.appendChild(coordsDisplay);
-    //ADDED BY EVAN ^^^ <=====>
 
+    const distance = haversineDistance(clickedLat, clickedLon, currentLocation.lat, currentLocation.lon);
+    guessedLoc.push(parseFloat(distance.toFixed(2)));
+    currentRound++;
 
-    const distance = haversineDistance(
-      clickedLat, clickedLon,
-      currentLocation.lat, currentLocation.lon
-    );
+    resultEl.innerText = `Round ${currentRound}: You were ${distance.toFixed(2)} km away.`;
+    resultEl.style.color = distance < 0.1 ? "green" : "red";
 
-    if (distance < 0.1) {
-      resultEl.innerText = `✅ Correct! You were only ${distance.toFixed(2)} km away.`;
-      resultEl.style.color = "green";
-
+    if (currentRound < 3) {
       setTimeout(() => {
         currentLocation = locations[Math.floor(Math.random() * locations.length)];
-        viewer.setPanorama(`/resources/${currentLocation.file}`);
+        viewer.setPanorama(`../../resources/img/${currentLocation.file}`);
         mapSection.style.display = 'none';
         backBtn.style.display = 'none';
         resultEl.innerText = "";
       }, 2000);
     } else {
-      resultEl.innerText = `❌ Not quite. You were ${distance.toFixed(2)} km away. Try again!`;
-      resultEl.style.color = "red";
-    }
+      const totalDistance = guessedLoc.reduce((acc, val) => acc + val, 0).toFixed(2);
+      resultEl.innerText += `\n🎉 Game over! Total distance: ${totalDistance} km`;
 
-    fetch('/save-location', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lat: clickedLat, lon: clickedLon })
+      fetch('/save-location', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ totalDistance })
       })
       .then(response => response.json())
-      .then(data => console.log('Saved:', data))
-      .catch(error => console.error('Error:', error));
+      .then(data => console.log('Score saved:', data))
+      .catch(error => console.error('Error saving:', error));
+      currentRound = 0;
+      guessedLoc = [];
+      setTimeout(() => {
+        currentLocation = locations[Math.floor(Math.random() * locations.length)];
+        viewer.setPanorama(`../../resources/img/${currentLocation.file}`);
+        mapSection.style.display = 'none';
+        backBtn.style.display = 'none';
+        resultEl.innerText = "";
+      }, 2000);
+    }
   });
 </script>
 

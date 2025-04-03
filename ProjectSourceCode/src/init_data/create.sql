@@ -43,6 +43,15 @@ CREATE TABLE Geo_Guessr_Location (
     longitude DECIMAL(9,6) NOT NULL  -- Longitude
 );
 
+DROP TABLE IF EXISTS locations;
+CREATE TABLE IF NOT EXISTS locations (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        image_file VARCHAR(255) NOT NULL,
+        latitude DECIMAL(9,6) NOT NULL,
+        longitude DECIMAL(9,6) NOT NULL
+      );
+
 -- Stores the scores for geoguessr
 DROP TABLE IF EXISTS Geo_Guessr_Scores;
 CREATE TABLE Geo_Guessr_Scores (
@@ -55,7 +64,6 @@ CREATE TABLE Geo_Guessr_Scores (
     FOREIGN KEY (user_id) REFERENCES User_Information(user_id) ON DELETE CASCADE,
     FOREIGN KEY (location_id) REFERENCES Geo_Guessr_Location(location_id) ON DELETE CASCADE
 );
-
 
 --WORDLE
 -- Uses user_id from the User_information to show user wordle stats

@@ -54,40 +54,6 @@ const db = pgp(dbConfig);
 //   });
 
 //ADDED TO SET UP 
-const initializeDatabase = async () => {
-  try {
-    // Create the locations table if it doesn't exist
-    await db.none(`
-      CREATE TABLE IF NOT EXISTS locations (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        image_file VARCHAR(255) NOT NULL,
-        latitude DECIMAL(9,6) NOT NULL,
-        longitude DECIMAL(9,6) NOT NULL
-      );
-    `);
-    console.log('Locations table created or already exists');
-    
-    // Check if data already exists to avoid duplicate inserts
-    const count = await db.one('SELECT COUNT(*) FROM locations');
-    if (parseInt(count.count) === 0) {
-      // Insert data only if the table is empty
-      await db.none(`
-        INSERT INTO locations (name, image_file, latitude, longitude) VALUES 
-        ('Folsom Statue', 'ArtBuilding.jpg', 40.01073, 105.26375),
-        ('Business Field', 'BusinessField.jpg', 40.006120, 105.262480),
-        ('Farrand Field', 'FarrandField.jpg', 40.00641, 105.26665),
-        ('Art Building', 'ArtBuilding.jpg', 40.00712, 105.27027),
-        ('Planetarium', 'Planetarium.jpg', 40.00354, 105.26397);
-      `);
-      console.log('Initial location data inserted');
-    } else {
-      console.log('Location data already exists, skipping insert');
-    }
-  } catch (err) {
-    console.error('Database initialization error:', err);
-  }
-};
 
 // Call the function when the app starts
 db.connect()
@@ -96,7 +62,7 @@ db.connect()
     obj.done(); // success, release the connection
     
     // Initialize the database after connection is established
-    initializeDatabase();
+
   })
   .catch(error => {
     console.log('ERROR:', error.message || error);
@@ -237,23 +203,37 @@ app.get('/geoGuess', async (req, res) => {
 });
 
 app.post('/save-location', async (req, res) => {
-    const { lat, lon } = req.body;
-  
-    if (!lat || !lon) {
-      return res.status(400).json({ success: false, message: 'Missing coordinates' });
-    }
-  
-    try {
-      
-      await db.none(
-        'INSERT INTO locations (name, image_file, latitude, longitude) VALUES ($1, $2, $3, $4)',
-        ['User Guess', 'placeholder.jpg', lat, lon]
-      );
-      res.json({ success: true, message: 'Location saved!' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, message: 'Database error: ' + err.message });
-    }
+  const { totalDistance } = req.body;
+  const { user_id, username } = req.session.user;
+
+  if (!user_id || !totalDistance) {
+    return res.status(400).json({ success: false, message: 'Missing session or score data' });
+  }
+
+  // Convert distance into a score (e.g., inverse or subtract from max)
+  const maxScore = 30000; // 10,000 pts per round
+  const score = Math.max(0, Math.round(maxScore - totalDistance * 1000)); // subtract meters
+
+  try {
+    await db.none(`
+      INSERT INTO User_Geoguessr_Stats (user_id, highest_score)
+      VALUES ($1, $2)
+      ON CONFLICT (user_id)
+      DO UPDATE SET highest_score = GREATEST(User_Geoguessr_Stats.highest_score, EXCLUDED.highest_score)
+    `, [user_id, score]);
+
+    await db.none(`
+      INSERT INTO Geoguessr_Leaderboard (user_id, username, highscore)
+      VALUES ($1, $2, $3)
+      ON CONFLICT (user_id)
+      DO UPDATE SET highscore = GREATEST(Geoguessr_Leaderboard.highscore, EXCLUDED.highscore)
+    `, [user_id, username, score]);
+
+    res.json({ success: true, message: 'Score recorded!', score });
+  } catch (err) {
+    console.error('Error saving GeoGuessr score:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
 });
 
 app.get('/check-locations', async (req, res) => {
