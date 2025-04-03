@@ -32,15 +32,15 @@ INSERT INTO Wordle_Leaderboard (user_id, username, highest_streak) VALUES (1, 'e
 INSERT INTO Crossword_Leaderboard (user_id, username, highest_streak) VALUES (1, 'example', 14);
 
 -- Crossword_Bank
-INSERT INTO Crossword_Bank (crossword_id) VALUES (12345);
+-- INSERT INTO Crossword_Bank (crossword_id) VALUES (12345);
 
 -- System_Crossword_Row_Control
-INSERT INTO System_Crossword_Row_Control (crossword_id, row_number, word, hint) 
-VALUES (12345, 1, 'example', 'A term illustrating a certain topic/thing');
+-- INSERT INTO System_Crossword_Row_Control (crossword_id, row_number, word, hint) 
+-- VALUES (12345, 1, 'example', 'A term illustrating a certain topic/thing');
 
 -- System_Crossword_Column_Control
-INSERT INTO System_Crossword_Column_Control (crossword_id, column_number, word, hint) 
-VALUES (12345, 2, 'school', 'A place of education');
+-- INSERT INTO System_Crossword_Column_Control (crossword_id, column_number, word, hint) 
+-- VALUES (12345, 2, 'school', 'A place of education');
 
 -- Geo_Guessr_Location
 INSERT INTO Geo_Guessr_Location (location_id, name, image_file, latitude, longitude) VALUES (3, 'Engineering Center', '<file name>', 10.0, 20.0);
