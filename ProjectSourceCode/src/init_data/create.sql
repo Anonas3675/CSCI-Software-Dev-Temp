@@ -9,7 +9,7 @@ CREATE TABLE User_To_Backend (
 DROP TABLE IF EXISTS User_Information;
 CREATE TABLE User_Information (
     username VARCHAR(45) PRIMARY KEY,
-    user_id SERIAL UNIQUE,
+    user_id INT UNIQUE DEFAULT nextval('user_to_backend_user_id_seq'),
     password VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id) ON DELETE CASCADE
 );
