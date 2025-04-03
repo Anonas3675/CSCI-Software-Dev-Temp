@@ -225,8 +225,10 @@ app.get('/home', auth, async (req, res) => {
 });
 
 app.get('/geoGuess', async (req, res) => {
+  console.log("getting geoguess")
   try {
     const locations = await db.any('SELECT name, image_file AS file, latitude AS lat, longitude AS lon FROM locations');
+    console.log(locations)
     res.render('pages/geoGuess', { locations });
   } catch (err) {
     console.error('Error fetching locations:', err);
@@ -242,6 +244,7 @@ app.post('/save-location', async (req, res) => {
     }
   
     try {
+      
       await db.none(
         'INSERT INTO locations (name, image_file, latitude, longitude) VALUES ($1, $2, $3, $4)',
         ['User Guess', 'placeholder.jpg', lat, lon]
