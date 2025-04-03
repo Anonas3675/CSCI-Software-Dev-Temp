@@ -56,7 +56,6 @@ CREATE TABLE Geo_Guessr_Scores (
     FOREIGN KEY (location_id) REFERENCES Geo_Guessr_Location(location_id) ON DELETE CASCADE
 );
 
-
 --WORDLE
 -- Uses user_id from the User_information to show user wordle stats
 DROP TABLE IF EXISTS User_Wordle_Stats;
