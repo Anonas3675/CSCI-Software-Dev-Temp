@@ -1,3 +1,4 @@
+version: '3.9'
 services:
   db:
     image: 'postgres:latest'
@@ -21,7 +22,7 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./:/ProjectSourceCode/
+      - ./:/ProjectSourceCode
     command: 'npm start'
 volumes:
   ProjectSourceCode:
