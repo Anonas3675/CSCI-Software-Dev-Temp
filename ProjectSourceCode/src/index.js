@@ -172,23 +172,23 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-      return res.status(400).send('Username and password required.');
-  }
-  const hashedPassword = await bcrypt.hash(password, 10);
-  try {
-    const query = 'INSERT INTO User_Information (username, user_id, password) VALUES ($1, $2, $3)';
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).send('Username and password required.');
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+      const query = 'INSERT INTO User_Information (username, user_id, password) VALUES ($1, $2, $3)';
 
-    const user_serial = await db.one('INSERT INTO User_To_Backend DEFAULT VALUES RETURNING user_id');
-    const user_id = user_serial.user_id;
+      const user_serial = await db.one('INSERT INTO User_To_Backend DEFAULT VALUES RETURNING user_id');
+      const user_id = user_serial.user_id;
 
-    await db.none(query, [username, user_id, hashedPassword]);
-    res.redirect('/login');
-  } catch (err) {
-      console.error('Error registering user:', err);
-      res.redirect('/register');
-  }
+      await db.none(query, [username, user_id, hashedPassword]);
+      res.redirect('/login');
+    } catch (err) {
+        console.error('Error registering user:', err);
+        res.redirect('/register');
+    }
 });
 
 
