@@ -264,6 +264,22 @@ app.get('/check-locations', async (req, res) => {
 });
 
 
+// Trivia APIs
+app.get('/trivia', (req, res) => {
+  res.render('pages/trivia');
+})
+
+app.get('/question', async (req, res) => {
+  const difficulty = req.query.difficulty;
+  try {
+    const question = await db.one('SELECT question, question_id FROM Trivia_Question_Bank WHERE difficulty = $1 ORDER BY RANDOM() LIMIT 1;', [difficulty])
+    res.json({question: question, question_id: question_id});
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({error: err.message});
+  }
+});
+
 
 
 
