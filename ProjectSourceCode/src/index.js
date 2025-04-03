@@ -176,7 +176,6 @@ app.post('/register', async (req, res) => {
     if (!username || !password) {
         return res.status(400).send('Username and password required.');
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
     const query = 'INSERT INTO User_Information (username, password) VALUES ($1, $2)';
 
