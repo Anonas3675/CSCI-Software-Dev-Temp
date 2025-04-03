@@ -28,21 +28,32 @@ describe('Server!', () => {
 });
 
 // *********************** TODO: WRITE 2 UNIT TESTCASES **************************
-describe('Testing Add User API', () => {
-  it('positive : /add_user', done => {
+describe('Testing Register API', () => {
+  it('positive : /register', done => {
     chai
       .request(server)
-      .post('/add_user')
-      .send({id: 5, name: 'John Doe', dob: '2020-02-20'})
+      .post('/register')
+      .send({username: 'John Doe', password: 'My_Password'})
       .end((err, res) => {
         expect(res).to.have.status(200);
-        expect(res.body.message).to.equals('Success');
         done();
       });
   });
 });
 
-
+describe('Testing Register API', () => {
+  it('negative : /register', done => {
+    chai
+      .request(server)
+      .post('/register')
+      .send({username: 'John Doe'})
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        done();
+      });
+  });
+});
 // ********************************************************************************
 
+// *********************** Part C **************************
 
