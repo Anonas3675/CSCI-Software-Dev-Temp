@@ -172,21 +172,23 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).send('Username and password required.');
-    }
+  const { username, password } = req.body;
+  if (!username || !password) {
+      return res.status(400).send('Username and password required.');
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    const query = 'INSERT INTO User_Information (username, user_id, password) VALUES ($1, $2, $3)';
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const query = 'INSERT INTO User_Information (username, password) VALUES ($1, $2)';
+    const user_serial = await db.one('INSERT INTO User_To_Backend DEFAULT VALUES RETURNING user_id');
+    const user_id = user_serial.user_id;
 
-    try {
-        await db.none(query, [username, hashedPassword]);
-        res.redirect('/login');
-    } catch (err) {
-        console.error('Error registering user:', err);
-        res.redirect('/register');
-    }
+    await db.none(query, [username, user_id, hashedPassword]);
+    res.redirect('/login');
+  } catch (err) {
+      console.error('Error registering user:', err);
+      res.redirect('/register');
+  }
 });
 
 
@@ -260,6 +262,91 @@ app.get('/check-locations', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+app.get('/welcome', (req, res) => {
+  res.json({status: 'success', message: 'Welcome!'});
+});
+
+// Trivia APIs
+app.get('/trivia', (req, res) => {
+  res.render('pages/trivia');
+})
+
+app.get('/question', async (req, res) => {
+  const difficulty = req.query.difficulty;
+  try {
+    const question = await db.one('SELECT question, question_id FROM Trivia_Question_Bank WHERE difficulty = $1 ORDER BY RANDOM() LIMIT 1;', [difficulty])
+    res.json({question: question, question_id: question_id});
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({error: err.message});
+  }
+});
+
+
+//API's for Corssword
+
+// Get all puzzles
+app.get('/puzzles', async (req, res) => {
+  try {
+    const puzzles = await db.any('SELECT * FROM crossword_puzzles');
+    res.json(puzzles);
+  } catch (err) {
+    console.error('Error fetching puzzles:', err);
+    res.status(500).json({ error: 'Error fetching puzzles' });
+  }
+});
+
+
+// Get a specific puzzle by ID
+app.get('/puzzles/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const puzzle = await db.oneOrNone('SELECT * FROM crossword_puzzles WHERE puzzle_id = $1', [id]);
+
+    if (!puzzle) {
+      return res.status(404).json({ error: 'Puzzle not found' });
+    }
+
+    res.json(puzzle);
+  } catch (err) {
+    console.error('Error fetching puzzle:', err);
+    res.status(500).json({ error: 'Error fetching puzzle' });
+  }
+});
+
+// Get the grid structure for a puzzle
+app.get('/grid/:puzzle_id', async (req, res) => {
+  const { puzzle_id } = req.params;
+
+  try {
+    const grid = await db.any('SELECT * FROM crossword_grid WHERE puzzle_id = $1 ORDER BY row_index, col_index', [puzzle_id]);
+    res.json(grid);
+  } catch (err) {
+    console.error('Error fetching grid:', err);
+    res.status(500).json({ error: 'Error fetching grid' });
+  }
+});
+
+// Get the clues for a puzzle
+app.get('/clues/:puzzle_id', async (req, res) => {
+  const { puzzle_id } = req.params;
+
+  try {
+    const clues = await db.any('SELECT * FROM crossword_clues WHERE puzzle_id = $1 ORDER BY clue_number', [puzzle_id]);
+    res.json(clues);
+  } catch (err) {
+    console.error('Error fetching clues:', err);
+    res.status(500).json({ error: 'Error fetching clues' });
+  }
+});
+
+app.get('/crossword', (req, res) => {
+  res.render('pages/crossword');
+});
+
+
 
 
 

@@ -2,16 +2,16 @@
 -- Table used purely to store user ids and connect the user's information and leaderboards using the id
 DROP TABLE IF EXISTS User_To_Backend;
 CREATE TABLE User_To_Backend (
-    user_id INT PRIMARY KEY
+    user_id SERIAL PRIMARY KEY
 );
 
 -- Used as the main table holding user information
 DROP TABLE IF EXISTS User_Information;
 CREATE TABLE User_Information (
     username VARCHAR(45) PRIMARY KEY,
-    user_id SERIAL UNIQUE,
+    user_id INT UNIQUE,
     password VARCHAR(255) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id) ON DELETE CASCADE
 );
 
 
@@ -55,7 +55,6 @@ CREATE TABLE Geo_Guessr_Scores (
     FOREIGN KEY (user_id) REFERENCES User_Information(user_id) ON DELETE CASCADE,
     FOREIGN KEY (location_id) REFERENCES Geo_Guessr_Location(location_id) ON DELETE CASCADE
 );
-
 
 --WORDLE
 -- Uses user_id from the User_information to show user wordle stats
@@ -176,17 +175,5 @@ CREATE TABLE Crossword_Clues (
     answer VARCHAR(45) NOT NULL, 
     start_row INT NOT NULL,
     start_col INT NOT NULL,
-    FOREIGN KEY (puzzle_id) REFERENCES Crossword_Puzzles(puzzle_id)
-);
-
--- Stores user progress on puzzles. Not sure if I'll implement this but might try later
-DROP TABLE IF EXISTS User_Puzzle_Progress CASCADE;
-CREATE TABLE User_Puzzle_Progress (
-    progress_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    puzzle_id INT NOT NULL,
-    row_index INT NOT NULL,
-    col_index INT NOT NULL,
-    user_letter CHAR(1) NULL,
     FOREIGN KEY (puzzle_id) REFERENCES Crossword_Puzzles(puzzle_id)
 );
