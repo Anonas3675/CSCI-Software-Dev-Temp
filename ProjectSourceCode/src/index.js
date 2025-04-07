@@ -172,23 +172,23 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-      return res.status(400).send('Username and password required.');
-  }
-  const hashedPassword = await bcrypt.hash(password, 10);
-  try {
-    const query = 'INSERT INTO User_Information (username, user_id, password) VALUES ($1, $2, $3)';
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).send('Username and password required.');
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+      const query = 'INSERT INTO User_Information (username, user_id, password) VALUES ($1, $2, $3)';
 
-    const user_serial = await db.one('INSERT INTO User_To_Backend DEFAULT VALUES RETURNING user_id');
-    const user_id = user_serial.user_id;
+      const user_serial = await db.one('INSERT INTO User_To_Backend DEFAULT VALUES RETURNING user_id');
+      const user_id = user_serial.user_id;
 
-    await db.none(query, [username, user_id, hashedPassword]);
-    res.redirect('/login');
-  } catch (err) {
-      console.error('Error registering user:', err);
-      res.redirect('/register');
-  }
+      await db.none(query, [username, user_id, hashedPassword]);
+      res.redirect('/login');
+    } catch (err) {
+        console.error('Error registering user:', err);
+        res.redirect('/register');
+    }
 });
 
 
@@ -216,21 +216,55 @@ app.use(auth)
 app.get('/home', auth, async (req, res) => {
   res.render('pages/home', {
       games: [
-          { name: "Wordle", link: "/wordle" },
-          { name: "GeoGuess", link: "/geoGuess" },
-          { name: "Crossword", link: "/crossword" },
-          { name: "Trivia", link: "/trivia" }
+          { name: 'Wordle', link: '/wordle' },
+          { name: 'GeoGuess', link: '/geoGuess' },
+          { name: 'Crossword', link: '/crossword' },
+          { name: 'Trivia', link: '/trivia' }
       ]
   });
 });
 
+app.get('/scoreboard', auth, async (req, res) => {
+  const type = req.query.type || 'geoguessr';
+
+  const leaderboardResults = {
+    geoguessr: {
+      query: 'SELECT username, highscore AS score FROM Geoguessr_Leaderboard ORDER BY highscore DESC',
+      title: 'Geoguessr Leaderboard',
+    },
+    wordle: {
+      query: 'SELECT username, highest_streak AS score FROM Wordle_Leaderboard ORDER BY highest_streak DESC',
+      title: 'Wordle Leaderboard',
+    },
+    trivia: {
+      query: 'SELECT username, highest_streak AS score FROM Trivia_Leaderboard ORDER BY highest_streak DESC',
+      title: 'Trivia Leaderboard',
+    },
+    crossword: {
+      query: 'SELECT username, highest_streak AS score FROM Crossword_Leaderboard ORDER BY highest_streak DESC',
+      title: 'Crossword Leaderboard',
+    },
+  };
+
+  const leaderboard = leaderboardResults[type];
+  try {
+    const [results] = await db.any(leaderboard.query);
+    res.render('pages/scoreboard', { leaderboard: results, title: leaderboard.title, type });
+  } catch (err) {
+    console.error(`Error fetching ${type} leaderboard`, err);
+    res.status(500).send(`Leaderboard error: ${err.message}`);
+  }
+});   
+
 app.get('/geoGuess', async (req, res) => {
+  console.log('getting geoguess')
   try {
     const locations = await db.any('SELECT name, image_file AS file, latitude AS lat, longitude AS lon FROM locations');
+    console.log(locations)
     res.render('pages/geoGuess', { locations });
   } catch (err) {
     console.error('Error fetching locations:', err);
-    res.status(500).send("Database error: " + err.message);
+    res.status(500).send('Database error: ' + err.message);
   }
 });
 
@@ -242,6 +276,7 @@ app.post('/save-location', async (req, res) => {
     }
   
     try {
+      
       await db.none(
         'INSERT INTO locations (name, image_file, latitude, longitude) VALUES ($1, $2, $3, $4)',
         ['User Guess', 'placeholder.jpg', lat, lon]
@@ -282,7 +317,6 @@ app.get('/question', async (req, res) => {
     res.status(500).json({error: err.message});
   }
 });
-
 
 //API's for Corssword
 
@@ -348,13 +382,9 @@ app.get('/crossword', (req, res) => {
 
 
 
-
-
-
-
 // *****************************************************
 // <!-- Section 5 : Start Server-->
 // *****************************************************
 // starting the server and keeping the connection open to listen for more requests
-app.listen(3000);
+module.exports = app.listen(3000);
 console.log('Server is listening on port 3000');
