@@ -318,6 +318,67 @@ app.get('/question', async (req, res) => {
   }
 });
 
+//API's for Corssword
+
+// Get all puzzles
+app.get('/puzzles', async (req, res) => {
+  try {
+    const puzzles = await db.any('SELECT * FROM crossword_puzzles');
+    res.json(puzzles);
+  } catch (err) {
+    console.error('Error fetching puzzles:', err);
+    res.status(500).json({ error: 'Error fetching puzzles' });
+  }
+});
+
+
+// Get a specific puzzle by ID
+app.get('/puzzles/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const puzzle = await db.oneOrNone('SELECT * FROM crossword_puzzles WHERE puzzle_id = $1', [id]);
+
+    if (!puzzle) {
+      return res.status(404).json({ error: 'Puzzle not found' });
+    }
+
+    res.json(puzzle);
+  } catch (err) {
+    console.error('Error fetching puzzle:', err);
+    res.status(500).json({ error: 'Error fetching puzzle' });
+  }
+});
+
+// Get the grid structure for a puzzle
+app.get('/grid/:puzzle_id', async (req, res) => {
+  const { puzzle_id } = req.params;
+
+  try {
+    const grid = await db.any('SELECT * FROM crossword_grid WHERE puzzle_id = $1 ORDER BY row_index, col_index', [puzzle_id]);
+    res.json(grid);
+  } catch (err) {
+    console.error('Error fetching grid:', err);
+    res.status(500).json({ error: 'Error fetching grid' });
+  }
+});
+
+// Get the clues for a puzzle
+app.get('/clues/:puzzle_id', async (req, res) => {
+  const { puzzle_id } = req.params;
+
+  try {
+    const clues = await db.any('SELECT * FROM crossword_clues WHERE puzzle_id = $1 ORDER BY clue_number', [puzzle_id]);
+    res.json(clues);
+  } catch (err) {
+    console.error('Error fetching clues:', err);
+    res.status(500).json({ error: 'Error fetching clues' });
+  }
+});
+
+app.get('/crossword', (req, res) => {
+  res.render('pages/crossword');
+});
 
 
 

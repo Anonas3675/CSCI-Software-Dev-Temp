@@ -177,15 +177,3 @@ CREATE TABLE Crossword_Clues (
     start_col INT NOT NULL,
     FOREIGN KEY (puzzle_id) REFERENCES Crossword_Puzzles(puzzle_id)
 );
-
--- Stores user progress on puzzles. Not sure if I'll implement this but might try later
-DROP TABLE IF EXISTS User_Puzzle_Progress CASCADE;
-CREATE TABLE User_Puzzle_Progress (
-    progress_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    puzzle_id INT NOT NULL,
-    row_index INT NOT NULL,
-    col_index INT NOT NULL,
-    user_letter CHAR(1) NULL,
-    FOREIGN KEY (puzzle_id) REFERENCES Crossword_Puzzles(puzzle_id)
-);
