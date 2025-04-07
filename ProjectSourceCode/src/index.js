@@ -307,6 +307,11 @@ app.get('/trivia', (req, res) => {
   res.render('pages/trivia');
 })
 
+//Wordel APIs
+app.get('/wordle', (req, res) => {
+  res.render('pages/wordle');
+})
+
 app.get('/question', async (req, res) => {
   const difficulty = req.query.difficulty;
   try {
@@ -386,5 +391,6 @@ app.get('/crossword', (req, res) => {
 // <!-- Section 5 : Start Server-->
 // *****************************************************
 // starting the server and keeping the connection open to listen for more requests
-module.exports = app.listen(3000);
+app.listen(3000);
+//module.exports = app.listen(3000);
 console.log('Server is listening on port 3000');
