@@ -216,23 +216,55 @@ app.use(auth)
 app.get('/home', auth, async (req, res) => {
   res.render('pages/home', {
       games: [
-          { name: "Wordle", link: "/wordle" },
-          { name: "GeoGuess", link: "/geoGuess" },
-          { name: "Crossword", link: "/crossword" },
-          { name: "Trivia", link: "/trivia" }
+          { name: 'Wordle', link: '/wordle' },
+          { name: 'GeoGuess', link: '/geoGuess' },
+          { name: 'Crossword', link: '/crossword' },
+          { name: 'Trivia', link: '/trivia' }
       ]
   });
 });
 
+app.get('/scoreboard', auth, async (req, res) => {
+  const type = req.query.type || 'geoguessr';
+
+  const leaderboardResults = {
+    geoguessr: {
+      query: 'SELECT username, highscore AS score FROM Geoguessr_Leaderboard ORDER BY highscore DESC',
+      title: 'Geoguessr Leaderboard',
+    },
+    wordle: {
+      query: 'SELECT username, highest_streak AS score FROM Wordle_Leaderboard ORDER BY highest_streak DESC',
+      title: 'Wordle Leaderboard',
+    },
+    trivia: {
+      query: 'SELECT username, highest_streak AS score FROM Trivia_Leaderboard ORDER BY highest_streak DESC',
+      title: 'Trivia Leaderboard',
+    },
+    crossword: {
+      query: 'SELECT username, highest_streak AS score FROM Crossword_Leaderboard ORDER BY highest_streak DESC',
+      title: 'Crossword Leaderboard',
+    },
+  };
+
+  const leaderboard = leaderboardResults[type];
+  try {
+    const [results] = await db.any(leaderboard.query);
+    res.render('pages/scoreboard', { leaderboard: results, title: leaderboard.title, type });
+  } catch (err) {
+    console.error(`Error fetching ${type} leaderboard`, err);
+    res.status(500).send(`Leaderboard error: ${err.message}`);
+  }
+});   
+
 app.get('/geoGuess', async (req, res) => {
-  console.log("getting geoguess")
+  console.log('getting geoguess')
   try {
     const locations = await db.any('SELECT name, image_file AS file, latitude AS lat, longitude AS lon FROM locations');
     console.log(locations)
     res.render('pages/geoGuess', { locations });
   } catch (err) {
     console.error('Error fetching locations:', err);
-    res.status(500).send("Database error: " + err.message);
+    res.status(500).send('Database error: ' + err.message);
   }
 });
 
