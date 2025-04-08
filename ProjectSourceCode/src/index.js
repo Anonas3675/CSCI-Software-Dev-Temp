@@ -193,11 +193,11 @@ app.get('/home', auth, async (req, res) => {
 app.get('/geoGuess', async (req, res) => {
   console.log("getting geoguess")
   try {
-    const locations = await db.any('SELECT name, image_file AS file, latitude AS lat, longitude AS lon FROM locations');
-    console.log(locations)
-    res.render('pages/geoGuess', { locations });
-  } catch (err) {
-    console.error('Error fetching locations:', err);
+    const location = await db.any('SELECT name, image_file AS file, latitude AS lat, longitude AS lon FROM Geo_Guessr_Location');
+    console.log(location)
+    res.render('pages/geoGuess', { location });
+    } catch (err) {
+    console.error('Error fetching location:', err);
     res.status(500).send("Database error: " + err.message);
   }
 });
@@ -238,8 +238,8 @@ app.post('/save-location', async (req, res) => {
 
 app.get('/check-locations', async (req, res) => {
   try {
-    const locations = await db.any('SELECT * FROM locations');
-    res.json(locations);
+    const location = await db.any('SELECT * FROM Geo_Guessr_Location');
+    res.json(location);
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ error: err.message });

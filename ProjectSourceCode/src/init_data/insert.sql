@@ -44,7 +44,7 @@
 
 -- Geo_Guessr_Location
 
-INSERT INTO locations (name, image_file, latitude, longitude) VALUES 
+INSERT INTO Geo_Guessr_Location (name, image_file, latitude, longitude) VALUES 
         ('Folsom Statue', 'ArtBuilding.jpg', 40.008711, -105.263675),
         ('Business Field', 'BusinessField.jpg', 40.007184, -105.263365),
         ('Farrand Field', 'FarrandField.jpg', 40.007344, -105.264509),

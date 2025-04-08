@@ -114,7 +114,7 @@
 <script type="module">
   import { Viewer } from '@photo-sphere-viewer/core';
 
-  const locations = {{{json locations}}};
+  const location = {{{json location}}};
 
   const MAP_BOUNDS = {
     minLat: 40.005,
@@ -134,7 +134,7 @@
     return R * c;
   }
 
-  let currentLocation = locations[Math.floor(Math.random() * locations.length)];
+  let currentLocation = location[Math.floor(Math.random() * location.length)];
 
   const viewer = new Viewer({
     container: document.querySelector('#viewer'),
@@ -289,7 +289,7 @@
 }
 
 function resetRound() {
-  currentLocation = locations[Math.floor(Math.random() * locations.length)];
+  currentLocation = location[Math.floor(Math.random() * location.length)];
   viewer.setPanorama(`../../resources/img/${currentLocation.file}`);
   mapSection.style.display = 'none';
   backBtn.style.display = 'none';
