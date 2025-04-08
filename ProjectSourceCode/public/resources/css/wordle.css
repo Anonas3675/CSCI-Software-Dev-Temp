@@ -5,6 +5,7 @@ body{
 
 hr {
     width: 500px;
+    margin: 0 auto;
 }
 
 #title{ /*# -used to specify id*/
