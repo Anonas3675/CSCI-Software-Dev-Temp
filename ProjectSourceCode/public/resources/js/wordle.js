@@ -1,13 +1,15 @@
 //Creaye 30 titles and give each of them an id. An id corresponds to row column indices
 
 var height = 6; //number of guesses
-var width = 5; //length of the word
+var width = 5; //length of the word. This is the default value and gets changed later on
 
 var row = 0; //Incrementes each time a guess is made
 var col = 0; //current letter
 
 var gameOver = false;
-var word = "SQUID";
+var word = "SUPERIOR";
+width = word.length;
+height = width + 1;
 
 //Could make an array
 
@@ -17,6 +19,8 @@ window.onload = function(){ //This function is called when the window is loaded
 
 function intialize(){
     //Create game board
+    document.getElementById("board").style.width = ((width*60) + 50) + 'px';
+    document.getElementById("board").style.height = ((height*60) + 60) + 'px';
     for (let r=0; r < height; r++){
         for(let c = 0; c < width; c++){
             //<span id="0-0" class="title"><\span>
