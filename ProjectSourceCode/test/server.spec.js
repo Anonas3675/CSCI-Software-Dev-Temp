@@ -12,20 +12,20 @@ const {assert, expect} = chai;
 
 // ********************** DEFAULT WELCOME TESTCASE ****************************
 
-/*describe('Server!', () => {
-  // Sample test case given to test / endpoint.
-  it('Returns the default welcome message', done => {
-    chai
-      .request(server)
-      .get('/welcome')
-      .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res.body.status).to.equals('success');
-        assert.strictEqual(res.body.message, 'Welcome!');
-        done();
-      });
-  });
-});*/
+// describe('Server!', () => {
+//   // Sample test case given to test / endpoint.
+//   it('Returns the default welcome message', done => {
+//     chai
+//       .request(server)
+//       .get('/welcome')
+//       .end((err, res) => {
+//         expect(res).to.have.status(200);
+//         expect(res.body.status).to.equals('success');
+//         assert.strictEqual(res.body.message, 'Welcome!');
+//         done();
+//       });
+//   });
+// });
 
 // *********************** TODO: WRITE 2 UNIT TESTCASES **************************
 describe('Testing Register API', () => {
@@ -57,3 +57,28 @@ describe('Testing Register API', () => {
 
 // *********************** Part C **************************
 
+describe('Testing Register API', () => {
+  it('positive : /login', done => {
+    chai
+      .request(server)
+      .post('/register')
+      .send({username: 'John Doe', password: 'My_Password'})
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        done();
+      });
+  });
+});
+
+describe('Testing Register API', () => {
+  it('negative : /register', done => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({password: 'pword'})
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        done();
+      });
+  });
+});
