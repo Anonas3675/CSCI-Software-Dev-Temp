@@ -321,15 +321,76 @@ app.get('/trivia', (req, res) => {
 })
 
 app.get('/question', async (req, res) => {
-  const difficulty = req.query.difficulty;
+  const difficulty = parseInt(req.query.difficulty) || 2;
+
   try {
-    const question = await db.one('SELECT question, question_id FROM Trivia_Question_Bank WHERE difficulty = $1 ORDER BY RANDOM() LIMIT 1;', [difficulty])
-    res.json({question: question, question_id: question_id});
+    const question = await db.one(
+      `SELECT question_id, question, correct_answer, incorrect_answer_1, incorrect_answer_2, incorrect_answer_3
+       FROM Trivia_Question_Bank
+       WHERE difficulty = $1
+       ORDER BY RANDOM() LIMIT 1`,
+      [difficulty]
+    );
+    res.json({ question });
   } catch (err) {
-    console.error('Error selecting question:', err);
-    res.status(500).json({error: err.message});
+    console.error('Error fetching question:', err);
+    res.status(500).json({ error: 'Failed to fetch trivia question.' });
   }
 });
+
+app.post('/submit-trivia-answer', auth, async (req, res) => {
+  const userId = req.session.user.user_id;
+  const { correct } = req.body;
+
+  try {
+    const stats = await db.oneOrNone(
+      `SELECT current_streak, highest_streak FROM User_Trivia_Stats WHERE user_id = $1`,
+      [userId]
+    );
+
+    if (!stats) {
+      await db.none(
+        `INSERT INTO User_Trivia_Stats (user_id, current_streak, highest_streak) VALUES ($1, $2, $2)`,
+        [userId, correct ? 1 : 0]
+      );
+    } else {
+      const newStreak = correct ? stats.current_streak + 1 : 0;
+      const newHighest = Math.max(stats.highest_streak, newStreak);
+
+      await db.none(
+        `UPDATE User_Trivia_Stats
+         SET current_streak = $1, highest_streak = $2
+         WHERE user_id = $3`,
+        [newStreak, newHighest, userId]
+      );
+    }
+
+    // Leaderboard update
+    const lb = await db.oneOrNone(
+      `SELECT highest_streak FROM Trivia_Leaderboard WHERE user_id = $1`,
+      [userId]
+    );
+
+    if (!lb && correct) {
+      await db.none(
+        `INSERT INTO Trivia_Leaderboard (user_id, username, highest_streak)
+         VALUES ($1, $2, 1)`,
+        [userId, req.session.user.username]
+      );
+    } else if (lb && correct && stats.current_streak + 1 > lb.highest_streak) {
+      await db.none(
+        `UPDATE Trivia_Leaderboard SET highest_streak = $1 WHERE user_id = $2`,
+        [stats.current_streak + 1, userId]
+      );
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error submitting answer:', err);
+    res.status(500).json({ success: false, error: 'Failed to submit answer.' });
+  }
+});
+
 
 //Wordle APIs
 
