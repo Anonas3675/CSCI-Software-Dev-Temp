@@ -94,8 +94,7 @@ app.use(
   })
 );
 
-app.use(express.static('src/resources/img'));
-app.use(express.static('src/resources/css'));
+app.use(express.static('src/resources'));
 
 
 // *****************************************************
