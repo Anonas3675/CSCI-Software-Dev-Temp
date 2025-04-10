@@ -510,7 +510,7 @@ function checkAnswers() {
 async function updateUserStreak() {
   try {
     const response = await fetch('/update-streak', {
-      method: 'POST' 
+      method: 'POST',
     });
     
     const data = await response.json();

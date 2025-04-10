@@ -1,0 +1,6 @@
+:root {
+    /* Hey Browser, 
+       this website support `dark` and `light`
+       but the author prefers `dark` representation */
+    color-scheme: dark light;
+  }

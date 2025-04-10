@@ -80,7 +80,7 @@
 <div id="map-section" class="container text-center mt-4">
   <h2>Click the location on the CU Campus Map</h2>
   <div id="map-container" style="position: relative; width: 100%; max-width: 1000px; margin: 0 auto; max-height: 60vh; overflow: hidden;">
-    <img id="campus-map" src="../../resources/img/cu-campus-map.jpg" alt="CU Campus Map" style="width: 100%; height: auto; max-height: 55vh; object-fit: contain; display: block;" /> 
+    <img id="campus-map" src="img/cu-campus-map.jpg" alt="CU Campus Map" style="width: 100%; height: auto; max-height: 55vh; object-fit: contain; display: block;" /> 
   </div>
   <div style="margin-top: 20px; padding-top: 10px;">
     <button id="confirm-guess-btn" class="btn btn-primary mt-3">Confirm Guess</button>
@@ -138,7 +138,7 @@
 
   const viewer = new Viewer({
     container: document.querySelector('#viewer'),
-    panorama: `../../resources/img/${currentLocation.file}`,
+    panorama: `img/${currentLocation.file}`,
     navbar: [
       {
         id: 'guess',
@@ -203,7 +203,7 @@
     
     // Create new pin that uses percentages for positioning
     pinElement = document.createElement('img');
-    pinElement.src = '../../resources/img/pin.jpg';
+    pinElement.src = 'img/pin.jpg';
     pinElement.style.position = 'absolute';
     pinElement.style.left = `${xPercent}%`; // Use percentage instead of pixels
     pinElement.style.top = `${yPercent}%`;  // Use percentage instead of pixels
@@ -290,7 +290,7 @@
 
 function resetRound() {
   currentLocation = location[Math.floor(Math.random() * location.length)];
-  viewer.setPanorama(`../../resources/img/${currentLocation.file}`);
+  viewer.setPanorama(`img/${currentLocation.file}`);
   mapSection.style.display = 'none';
   backBtn.style.display = 'none';
   resultEl.innerText = "";
