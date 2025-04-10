@@ -89,16 +89,6 @@
   </div>
 </div>
 
-{{!-- <!-- Map Guess Section -->
-<div id="map-section" class="container text-center mt-4">
-  <h2>Click the location on the CU Campus Map</h2>
-  <div id="map-container" style="position: relative; width: 100%; max-width: 1000px; margin: 0 auto; overflow: visible;">
-    <img id="campus-map" src="../../resources/img/cu-campus-map.jpg" alt="CU Campus Map" style="width: 100%; height: auto; display: block;" /> 
-  </div>
-  <button id="confirm-guess-btn" class="btn btn-primary mt-3">Confirm Guess</button>
-  <p id="result" class="mt-3 fw-bold"></p>
-  <button id="back-btn" class="btn btn-secondary">Back to Panorama</button>
-</div> --}}
 
 <!-- Import Map for Modules -->
 <script type="importmap">
@@ -215,25 +205,25 @@
     document.getElementById('map-container').appendChild(pinElement);
     
     // Show clicked coords for debugging (also using percentage positioning)
-    const coordsDisplay = document.createElement('div');
-    coordsDisplay.className = 'clicked-coords';
-    coordsDisplay.style.position = 'absolute';
-    coordsDisplay.style.left = `${xPercent}%`;
-    coordsDisplay.style.top = `${yPercent}%`;
-    coordsDisplay.style.backgroundColor = 'rgba(0,0,0,0.7)';
-    coordsDisplay.style.color = 'white';
-    coordsDisplay.style.padding = '5px';
-    coordsDisplay.style.borderRadius = '3px';
-    coordsDisplay.style.fontSize = '12px';
-    coordsDisplay.style.transform = 'translate(-50%, -200%)'; // position above pin
-    coordsDisplay.style.zIndex = '1001';
-    coordsDisplay.innerText = `Lat: ${clickedLat.toFixed(6)}, Lon: ${clickedLon.toFixed(6)}`;
+    //const coordsDisplay = document.createElement('div');
+    // coordsDisplay.className = 'clicked-coords';
+    //coordsDisplay.style.position = 'absolute';
+    //coordsDisplay.style.left = `${xPercent}%`;
+    //coordsDisplay.style.top = `${yPercent}%`;
+    //coordsDisplay.style.backgroundColor = 'rgba(0,0,0,0.7)';
+    //coordsDisplay.style.color = 'white';
+   // coordsDisplay.style.padding = '5px';
+    //coordsDisplay.style.borderRadius = '3px';
+    //coordsDisplay.style.fontSize = '12px';
+    //coordsDisplay.style.transform = 'translate(-50%, -200%)'; // position above pin
+    //coordsDisplay.style.zIndex = '1001';
+    //coordsDisplay.innerText = `Lat: ${clickedLat.toFixed(6)}, Lon: ${clickedLon.toFixed(6)}`;// --}}
     
     // Remove previous coord displays
-    const existingCoords = document.querySelectorAll('.clicked-coords');
-    existingCoords.forEach(el => el.remove());
+    //const existingCoords = document.querySelectorAll('.clicked-coords');
+    //existingCoords.forEach(el => el.remove());
     
-    document.getElementById('map-container').appendChild(coordsDisplay);
+   // document.getElementById('map-container').appendChild(coordsDisplay);
 });
 
 
@@ -288,21 +278,48 @@
   isButtonCooldown = false;
 }
 
-function resetRound() {
-  currentLocation = location[Math.floor(Math.random() * location.length)];
-  viewer.setPanorama(`img/${currentLocation.file}`);
-  mapSection.style.display = 'none';
-  backBtn.style.display = 'none';
-  resultEl.innerText = "";
-  if (pinElement) pinElement.remove();
-  resetButtonState()
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];  // Swap elements
+  }
+  return array;
 }
+
+let gameLocations = shuffleArray([...location]); // Copy and shuffle locations
+let roundLocations = gameLocations.slice(0, 3);  // Get the first 3 unique locations
+
+
+function resetRound() {
+  if (currentRound < 3) {
+    currentLocation = roundLocations[currentRound];  // Get location from the shuffled array
+    viewer.setPanorama(`img/${currentLocation.file}`);
+    mapSection.style.display = 'none';
+    backBtn.style.display = 'none';
+    resultEl.innerText = "";
+    resetButtonState();
+    if (pinElement) {
+      pinElement.remove();
+      pinElement = null;
+    }
+  }
+}
+
+
+
+
 
 
 function endGame() {
   const totalDistance = guessedLoc.reduce((acc, val) => acc + val, 0).toFixed(2);
   resultEl.innerText = `\n🎉 Game over! Total distance: ${totalDistance} km`;
   
+
+  const confirmBtn = document.getElementById('confirm-guess-btn');
+  confirmBtn.style.display = 'none'; // Or use confirmBtn.remove(); to remove it entirely
+  confirmBtn.disabled = true;
+
+
   // Create Play Again button
   const playAgainBtn = document.createElement('button');
   playAgainBtn.classList.add('btn', 'btn-success', 'mt-3', 'mx-2');
@@ -310,9 +327,12 @@ function endGame() {
   playAgainBtn.addEventListener('click', function() {
     currentRound = 0;
     guessedLoc = [];
+    gameLocations = shuffleArray([...location]);
+    roundLocations = gameLocations.slice(0, 3);  // Pick the first 3 locations
     resetRound();
     this.remove(); // Remove the play again button
     resultEl.innerText = '';
+    confirmBtn.style.display = 'inline-block'; // shows the button again
   });
   
 
@@ -321,7 +341,7 @@ function endGame() {
   resultEl.parentNode.insertBefore(playAgainBtn, resultEl.nextSibling);
   
   // Save score
-  fetch('/save-location', {
+  fetch('/saveScore', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ totalDistance })
