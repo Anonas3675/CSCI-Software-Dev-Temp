@@ -338,6 +338,75 @@ app.get('/wordle', (req, res) => {
   res.render('pages/wordle', {user: req.session.user});
 })
 
+
+app.post('/update-wordle-stats', auth, async (req, res) => {
+  const { won } = req.body;
+  const userId = req.session.user.user_id;
+  const username = req.session.user.username;
+
+  try {
+    // Check if the user already has stats
+    const stats = await db.oneOrNone(
+      'SELECT * FROM User_Wordle_Stats WHERE user_id = $1',
+      [userId]
+    );
+
+    if (!stats) {
+      // New user, insert default values
+      await db.none(
+        `INSERT INTO User_Wordle_Stats (user_id, successful_attempts, games_played, win_streak, highest_win_streak)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [userId, won ? 1 : 0, 1, won ? 1 : 0, won ? 1 : 0]
+      );
+    } else {
+      const newGamesPlayed = stats.games_played + 1;
+      const newSuccessfulAttempts = stats.successful_attempts + (won ? 1 : 0);
+      const newWinStreak = won ? stats.win_streak + 1 : 0;
+      const newHighestStreak = Math.max(stats.highest_win_streak, newWinStreak);
+
+      await db.none(
+        `UPDATE User_Wordle_Stats
+         SET successful_attempts = $1,
+             games_played = $2,
+             win_streak = $3,
+             highest_win_streak = $4
+         WHERE user_id = $5`,
+        [newSuccessfulAttempts, newGamesPlayed, newWinStreak, newHighestStreak, userId]
+      );
+    }
+
+    // Update leaderboard
+    const leaderboard = await db.oneOrNone(
+      'SELECT * FROM Wordle_Leaderboard WHERE user_id = $1',
+      [userId]
+    );
+
+    if (!leaderboard && won) {
+      await db.none(
+        `INSERT INTO Wordle_Leaderboard (user_id, username, highest_streak)
+         VALUES ($1, $2, 1)`,
+        [userId, username]
+      );
+    } else if (won && stats && stats.win_streak + 1 > leaderboard.highest_streak) {
+      await db.none(
+        `UPDATE Wordle_Leaderboard
+         SET highest_streak = $1
+         WHERE user_id = $2`,
+        [stats.win_streak + 1, userId]
+      );
+    }
+
+    res.json({ success: true, message: 'Wordle stats updated' });
+  } catch (err) {
+    console.error('Error updating Wordle stats:', err);
+    res.status(500).json({ success: false, message: 'Error updating stats' });
+  }
+});
+
+
+
+
+
 //Whenever a guess gets made, make a call to this. This should store the guess in the server
 app.post('/saveguess', (req, res) => {
   const guess = req.body.guess;
