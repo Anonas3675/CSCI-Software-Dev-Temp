@@ -221,7 +221,7 @@ app.get('/scoreboard', auth, async (req, res) => {
     geoguessr: {
       query: 'SELECT username, highscore AS score FROM Geoguessr_Leaderboard ORDER BY highscore DESC',
       title: 'Geoguessr Leaderboard',
-    },
+    },    
     wordle: {
       query: 'SELECT username, highest_streak AS score FROM Wordle_Leaderboard ORDER BY highest_streak DESC',
       title: 'Wordle Leaderboard',
@@ -259,25 +259,51 @@ app.get('/geoGuess', async (req, res) => {
   }
 });
 
-app.post('/save-location', async (req, res) => {
-    const { lat, lon } = req.body;
-  
-    if (!lat || !lon) {
-      return res.status(400).json({ success: false, message: 'Missing coordinates' });
-    }
-  
-    try {
-      
+app.post('/saveScore', async (req, res) => {
+  const { totalDistance } = req.body;
+
+  if (typeof totalDistance === 'undefined') {
+    return res.status(400).json({ success: false, message: 'Missing score' });
+  }
+
+  // Convert distance to "score" (e.g., lower is better, so maybe reverse it)
+  const newScore = Math.round(1000 - parseFloat(totalDistance) * 200); // Example scoring logic
+  const userId = req.session.user.user_id;
+  const username = req.session.user.username;
+  // const userId = req.session.user_id;
+  // const username = req.session.username;
+
+  if (!userId || !username) {
+    return res.status(401).json({ success: false, message: 'User not logged in' });
+  }
+
+  try {
+    // Check if user already has a score
+    const existing = await db.oneOrNone(
+      'SELECT highscore FROM Geoguessr_Leaderboard WHERE user_id = $1',
+      [userId]
+    );
+
+    if (!existing) {
+      // New user entry
       await db.none(
-        'INSERT INTO Geo_Guessr_Location (name, image_file, latitude, longitude) VALUES ($1, $2, $3, $4)',
-        ['User Guess', 'placeholder.jpg', lat, lon]
+        'INSERT INTO Geoguessr_Leaderboard (user_id, username, highscore) VALUES ($1, $2, $3)',
+        [userId, username, newScore]
       );
-      res.json({ success: true, message: 'Location saved!' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, message: 'Database error: ' + err.message });
+    } else if (newScore > existing.highscore) {
+      // Only update if new score is better
+      await db.none(
+        'UPDATE Geoguessr_Leaderboard SET highscore = $1 WHERE user_id = $2',
+        [newScore, userId]
+      );
     }
-});
+
+    res.json({ success: true, message: 'Score saved to leaderboard' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error: ' + err.message });
+  }
+}); 
 
 app.get('/check-locations', async (req, res) => {
   try {
