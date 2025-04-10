@@ -152,10 +152,12 @@ app.post('/login', async (req, res) => {
   try {
       const user = await db.oneOrNone('SELECT * FROM User_Information WHERE username = $1', [username]);
       if (!user) {
+        return res.render('pages/login', { message: 'Incorrect username or password.', error: true });
       }
 
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
+        return res.render('pages/login', { message: 'Incorrect username or password.', error: true });
       }
 
       req.session.user = user;
@@ -163,7 +165,7 @@ app.post('/login', async (req, res) => {
       res.redirect('/home');
   } catch (err) {
       console.error('Login error:', err);
-      res.render('pages/login', { message: 'Error logging in.', error: true });
+      res.render('pages/login', { message: 'Erorr Logging in', error: true });
   }
 });
 
@@ -248,7 +250,8 @@ app.get('/scoreboard', auth, async (req, res) => {
 
   const leaderboard = leaderboardResults[type];
   try {
-    const [results] = await db.any(leaderboard.query);
+    //const [results] = await db.any(leaderboard.query);
+    const results = await db.any(leaderboard.query);
     res.render('pages/scoreboard', { leaderboard: results, title: leaderboard.title, type });
   } catch (err) {
     console.error(`Error fetching ${type} leaderboard`, err);
@@ -323,7 +326,7 @@ app.get('/question', async (req, res) => {
   }
 });
 
-//API's for Corssword
+//API's for Crossword
 
 // Get all puzzles
 app.get('/puzzles', async (req, res) => {
@@ -378,6 +381,66 @@ app.get('/clues/:puzzle_id', async (req, res) => {
   } catch (err) {
     console.error('Error fetching clues:', err);
     res.status(500).json({ error: 'Error fetching clues' });
+  }
+});
+
+//Update the user win when a crossword is successfully completed
+app.post('/update-streak', auth, async (req, res) => {
+  try {
+    // Get user ID from session
+    const userId = req.session.user.user_id;
+    
+    const userWithStreak = await db.oneOrNone(`
+      SELECT ui.user_id, ui.username, cl.highest_streak
+      FROM User_Information ui
+      LEFT JOIN Crossword_Leaderboard cl ON ui.user_id = cl.user_id
+      WHERE ui.user_id = $1`, [userId]);
+    
+    if (!userWithStreak) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    
+    // Check if streak exists in leaderboard
+    if (userWithStreak.highest_streak === null) {
+      // First-time streak, insert into leaderboard with streak = 1
+      const insertQuery = `
+        INSERT INTO Crossword_Leaderboard (user_id, username, highest_streak)
+        VALUES ($1, $2, 1)
+        RETURNING highest_streak`;
+      const result = await db.one(insertQuery, [userId, userWithStreak.username]);
+    
+      return res.json({ 
+        success: true, 
+        message: 'First streak recorded', 
+        newStreak: result.highest_streak,
+        username: userWithStreak.username
+      });
+    } 
+    
+    else {
+      // Update existing streak
+      const updateQuery = `
+        UPDATE Crossword_Leaderboard 
+        SET highest_streak = highest_streak + 1 
+        WHERE user_id = $1 
+        RETURNING highest_streak`;
+      const result = await db.one(updateQuery, [userId]);
+    
+      return res.json({ 
+        success: true, 
+        message: 'Streak Updated', 
+        newStreak: result.highest_streak,
+        username: userWithStreak.username
+      });
+    }
+  } 
+  
+  catch (err) {
+    console.error('Error updating crossword streak:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Database error: ' + err.message 
+    });
   }
 });
 

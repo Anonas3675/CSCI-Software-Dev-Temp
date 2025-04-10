@@ -133,13 +133,13 @@ CREATE TABLE User_Crossword_Stats (
     FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
--- Shows the leaderboard for crossword using user_id's from user_to_backend
+--Shows the leaderboard for crossword using user_id's from user_to_backend
 DROP TABLE IF EXISTS Crossword_Leaderboard;
 CREATE TABLE Crossword_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
-    highest_streak INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
+    highest_streak INT DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
 -- Stores the unique id for each crossword puzzle

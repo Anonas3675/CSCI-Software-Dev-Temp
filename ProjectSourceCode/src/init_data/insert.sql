@@ -39,7 +39,7 @@
 --INSERT INTO Wordle_Leaderboard (user_id, username, highest_streak) VALUES (1, 'example', 8);
 
 -- Crossword_Leaderboard
---INSERT INTO Crossword_Leaderboard (user_id, username, highest_streak) VALUES (1, 'example', 14);
+--INSERT INTO Crossword_Leaderboard (user_id, username, highest_streak) VALUES (2, 'example', 14);
 --INSERT INTO Crossword_Leaderboard (user_id, username, highest_streak) VALUES (1, 'example', 14);
 
 -- Insert the Crossword puzzle
