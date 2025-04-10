@@ -34,7 +34,7 @@
       <tbody>
         {{#each geoguessr}}
         <tr>
-          <td>{{inc @index}}</td>
+          <td>{{addOne @index}}</td>
           <td>{{username}}</td>
           <td>{{score}}</td>
         </tr>
@@ -55,7 +55,7 @@
       <tbody>
         {{#each wordle}}
         <tr>
-          <td>{{inc @index}}</td>
+          <td>{{addOne @index}}</td>
           <td>{{username}}</td>
           <td>{{highest_streak}}</td>
         </tr>
@@ -76,7 +76,7 @@
       <tbody>
         {{#each trivia}}
         <tr>
-          <td>{{inc @index}}</td>
+          <td>{{addOne @index}}</td>
           <td>{{username}}</td>
           <td>{{highest_streak}}</td>
         </tr>
@@ -97,7 +97,7 @@
       <tbody>
         {{#each crossword}}
         <tr>
-          <td>{{inc @index}}</td>
+          <td>{{addOne @index}}</td>
           <td>{{username}}</td>
           <td>{{highest_streak}}</td>
         </tr>

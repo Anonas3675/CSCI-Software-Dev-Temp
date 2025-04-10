@@ -25,7 +25,8 @@ const hbs = handlebars.create({
   helpers: {
     json: function (context) {
       return JSON.stringify(context);
-    }
+    },
+    addOne: val => parseInt(val) + 1
   }
 }); 
 
