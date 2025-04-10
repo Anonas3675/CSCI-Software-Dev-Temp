@@ -7,7 +7,7 @@ var row = 0; //Incrementes each time a guess is made
 var col = 0; //current letter
 
 var gameOver = false;
-var word = "SUPERIOR";
+var word = "TRACE";
 width = word.length;
 height = width + 1;
 
