@@ -222,56 +222,23 @@ app.use(auth)
 app.get('/home', auth, async (req, res) => {
   res.render('pages/home', {
       games: [
-          { name: 'Wordle', link: '/wordle' },
-          { name: 'GeoGuess', link: '/geoGuess' },
-          { name: 'Crossword', link: '/crossword' },
-          { name: 'Trivia', link: '/trivia' }
+          { name: "Wordle", link: "/wordle" },
+          { name: "GeoGuess", link: "/geoGuess" },
+          { name: "Crossword", link: "/crossword" },
+          { name: "Trivia", link: "/trivia" }
       ]
   });
 });
 
-app.get('/scoreboard', auth, async (req, res) => {
-  const type = req.query.type || 'geoguessr';
-
-  const leaderboardResults = {
-    geoguessr: {
-      query: 'SELECT username, highscore AS score FROM Geoguessr_Leaderboard ORDER BY highscore DESC',
-      title: 'Geoguessr Leaderboard',
-    },
-    wordle: {
-      query: 'SELECT username, highest_streak AS score FROM Wordle_Leaderboard ORDER BY highest_streak DESC',
-      title: 'Wordle Leaderboard',
-    },
-    trivia: {
-      query: 'SELECT username, highest_streak AS score FROM Trivia_Leaderboard ORDER BY highest_streak DESC',
-      title: 'Trivia Leaderboard',
-    },
-    crossword: {
-      query: 'SELECT username, highest_streak AS score FROM Crossword_Leaderboard ORDER BY highest_streak DESC',
-      title: 'Crossword Leaderboard',
-    },
-  };
-
-  const leaderboard = leaderboardResults[type];
-  try {
-    //const [results] = await db.any(leaderboard.query);
-    const results = await db.any(leaderboard.query);
-    res.render('pages/scoreboard', { leaderboard: results, title: leaderboard.title, type });
-  } catch (err) {
-    console.error(`Error fetching ${type} leaderboard`, err);
-    res.status(500).send(`Leaderboard error: ${err.message}`);
-  }
-});   
-
 app.get('/geoGuess', async (req, res) => {
-  console.log('getting geoguess')
+  console.log("getting geoguess")
   try {
     const locations = await db.any('SELECT name, image_file AS file, latitude AS lat, longitude AS lon FROM Geo_Guessr_Location');
     console.log(locations)
     res.render('pages/geoGuess', { locations });
   } catch (err) {
     console.error('Error fetching locations:', err);
-    res.status(500).send('Database error: ' + err.message);
+    res.status(500).send("Database error: " + err.message);
   }
 });
 
@@ -314,11 +281,6 @@ app.get('/trivia', (req, res) => {
   res.render('pages/trivia');
 })
 
-//Wordel APIs
-app.get('/wordle', (req, res) => {
-  res.render('pages/wordle');
-})
-
 app.get('/question', async (req, res) => {
   const difficulty = req.query.difficulty;
   try {
@@ -330,127 +292,6 @@ app.get('/question', async (req, res) => {
   }
 });
 
-//API's for Crossword
-
-// Get all puzzles
-app.get('/puzzles', async (req, res) => {
-  try {
-    const puzzles = await db.any('SELECT * FROM crossword_puzzles');
-    res.json(puzzles);
-  } catch (err) {
-    console.error('Error fetching puzzles:', err);
-    res.status(500).json({ error: 'Error fetching puzzles' });
-  }
-});
-
-
-// Get a specific puzzle by ID
-app.get('/puzzles/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const puzzle = await db.oneOrNone('SELECT * FROM crossword_puzzles WHERE puzzle_id = $1', [id]);
-
-    if (!puzzle) {
-      return res.status(404).json({ error: 'Puzzle not found' });
-    }
-
-    res.json(puzzle);
-  } catch (err) {
-    console.error('Error fetching puzzle:', err);
-    res.status(500).json({ error: 'Error fetching puzzle' });
-  }
-});
-
-// Get the grid structure for a puzzle
-app.get('/grid/:puzzle_id', async (req, res) => {
-  const { puzzle_id } = req.params;
-
-  try {
-    const grid = await db.any('SELECT * FROM crossword_grid WHERE puzzle_id = $1 ORDER BY row_index, col_index', [puzzle_id]);
-    res.json(grid);
-  } catch (err) {
-    console.error('Error fetching grid:', err);
-    res.status(500).json({ error: 'Error fetching grid' });
-  }
-});
-
-// Get the clues for a puzzle
-app.get('/clues/:puzzle_id', async (req, res) => {
-  const { puzzle_id } = req.params;
-
-  try {
-    const clues = await db.any('SELECT * FROM crossword_clues WHERE puzzle_id = $1 ORDER BY clue_number', [puzzle_id]);
-    res.json(clues);
-  } catch (err) {
-    console.error('Error fetching clues:', err);
-    res.status(500).json({ error: 'Error fetching clues' });
-  }
-});
-
-//Update the user win when a crossword is successfully completed
-app.post('/update-streak', auth, async (req, res) => {
-  try {
-    // Get user ID from session
-    const userId = req.session.user.user_id;
-    
-    const userWithStreak = await db.oneOrNone(`
-      SELECT ui.user_id, ui.username, cl.highest_streak
-      FROM User_Information ui
-      LEFT JOIN Crossword_Leaderboard cl ON ui.user_id = cl.user_id
-      WHERE ui.user_id = $1`, [userId]);
-    
-    if (!userWithStreak) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
-    
-    // Check if streak exists in leaderboard
-    if (userWithStreak.highest_streak === null) {
-      // First-time streak, insert into leaderboard with streak = 1
-      const insertQuery = `
-        INSERT INTO Crossword_Leaderboard (user_id, username, highest_streak)
-        VALUES ($1, $2, 1)
-        RETURNING highest_streak`;
-      const result = await db.one(insertQuery, [userId, userWithStreak.username]);
-    
-      return res.json({ 
-        success: true, 
-        message: 'First streak recorded', 
-        newStreak: result.highest_streak,
-        username: userWithStreak.username
-      });
-    } 
-    
-    else {
-      // Update existing streak
-      const updateQuery = `
-        UPDATE Crossword_Leaderboard 
-        SET highest_streak = highest_streak + 1 
-        WHERE user_id = $1 
-        RETURNING highest_streak`;
-      const result = await db.one(updateQuery, [userId]);
-    
-      return res.json({ 
-        success: true, 
-        message: 'Streak Updated', 
-        newStreak: result.highest_streak,
-        username: userWithStreak.username
-      });
-    }
-  } 
-  
-  catch (err) {
-    console.error('Error updating crossword streak:', err);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Database error: ' + err.message 
-    });
-  }
-});
-
-app.get('/crossword', (req, res) => {
-  res.render('pages/crossword');
-});
 
 
 
