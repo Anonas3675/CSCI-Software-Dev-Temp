@@ -321,10 +321,11 @@ function endGame() {
   resultEl.parentNode.insertBefore(playAgainBtn, resultEl.nextSibling);
   
   // Save score
-  fetch('/save-location', {
+  console.log("totDist " + totalDistance);
+  fetch('/saveScore', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ totalDistance })
+    body: JSON.stringify({ totalDistance: totalDistance })
   })
   .then(response => response.json())
   .then(data => console.log('Score saved:', data))
