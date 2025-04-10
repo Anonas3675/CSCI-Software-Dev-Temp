@@ -160,9 +160,11 @@ app.post('/login', async (req, res) => {
 
       req.session.user = user;
       req.session.save();
+      res.status(200);
       res.redirect('/home');
   } catch (err) {
       console.error('Login error:', err);
+      res.status(400);
       res.render('pages/login', { message: 'Error logging in.', error: true });
   }
 });
@@ -184,8 +186,10 @@ app.post('/register', async (req, res) => {
       const user_id = user_serial.user_id;
 
       await db.none(query, [username, user_id, hashedPassword]);
+      res.status(200);
       res.redirect('/login');
     } catch (err) {
+        res.status(400);
         console.error('Error registering user:', err);
         res.redirect('/register');
     }
@@ -267,7 +271,7 @@ app.get('/check-locations', async (req, res) => {
 });
 
 app.get('/welcome', (req, res) => {
-  res.json({status: 'success', message: 'Welcome!'});
+  res.json({status: success, message: 'Welcome!'});
 });
 
 // Trivia APIs
@@ -281,7 +285,7 @@ app.get('/question', async (req, res) => {
     const question = await db.one('SELECT question, question_id FROM Trivia_Question_Bank WHERE difficulty = $1 ORDER BY RANDOM() LIMIT 1;', [difficulty])
     res.json({question: question, question_id: question_id});
   } catch (err) {
-    console.error('Error:', err);
+    console.error('Error selecting question:', err);
     res.status(500).json({error: err.message});
   }
 });
