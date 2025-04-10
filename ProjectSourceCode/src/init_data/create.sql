@@ -133,13 +133,13 @@ CREATE TABLE User_Crossword_Stats (
     FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
--- Shows the leaderboard for crossword using user_id's from user_to_backend
+--Shows the leaderboard for crossword using user_id's from user_to_backend
 DROP TABLE IF EXISTS Crossword_Leaderboard;
 CREATE TABLE Crossword_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
-    highest_streak INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id)
+    highest_streak INT DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
 );
 
 -- Stores the unique id for each crossword puzzle
@@ -175,17 +175,5 @@ CREATE TABLE Crossword_Clues (
     answer VARCHAR(45) NOT NULL, 
     start_row INT NOT NULL,
     start_col INT NOT NULL,
-    FOREIGN KEY (puzzle_id) REFERENCES Crossword_Puzzles(puzzle_id)
-);
-
--- Stores user progress on puzzles. Not sure if I'll implement this but might try later
-DROP TABLE IF EXISTS User_Puzzle_Progress CASCADE;
-CREATE TABLE User_Puzzle_Progress (
-    progress_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    puzzle_id INT NOT NULL,
-    row_index INT NOT NULL,
-    col_index INT NOT NULL,
-    user_letter CHAR(1) NULL,
     FOREIGN KEY (puzzle_id) REFERENCES Crossword_Puzzles(puzzle_id)
 );

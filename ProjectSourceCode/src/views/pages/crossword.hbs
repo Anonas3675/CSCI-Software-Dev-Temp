@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CU Boulder Puzzle</title>
+  <link rel="stylesheet" href="../../resources/css/crossword.css">
+  <script src="../../resources/js/crossword.js"></script>
+</head>
+
+<body>
+  <div class="puzzle-wrapper">
+    <h1>CU Boulder Puzzle</h1>
+    
+    <div class="puzzle-selector">
+      <label for="puzzle-select">Select a puzzle:</label>
+      <select id="puzzle-select">
+        <option value="">-- Select a puzzle --</option>
+      </select>
+      <button id="load-puzzle-button">Load Puzzle</button>
+    </div>
+    
+    <div id="loading" class="loading">Loading puzzle...</div>
+    
+    <div id="crossword-container" class="crossword-container"></div>
+    
+    <div class="clues-container">
+      <div class="clue-list">
+        <div class="clue-heading">Across</div>
+        <div id="across-clues"></div>
+      </div>
+      <div class="clue-list">
+        <div class="clue-heading">Down</div>
+        <div id="down-clues"></div>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <button id="check-button">Check Answers</button>
+      <button id="reveal-button">Reveal Solution</button>
+      <button id="reset-button">Reset Puzzle</button>
+    </div>
+    
+    <div id="message" class="message"></div>
+  </div>
+
+</body>
+</html>
