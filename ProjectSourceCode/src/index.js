@@ -54,40 +54,6 @@ const db = pgp(dbConfig);
 //   });
 
 //ADDED TO SET UP 
-const initializeDatabase = async () => {
-  try {
-    // Create the locations table if it doesn't exist
-    await db.none(`
-      CREATE TABLE IF NOT EXISTS locations (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        image_file VARCHAR(255) NOT NULL,
-        latitude DECIMAL(9,6) NOT NULL,
-        longitude DECIMAL(9,6) NOT NULL
-      );
-    `);
-    console.log('Locations table created or already exists');
-    
-    // Check if data already exists to avoid duplicate inserts
-    const count = await db.one('SELECT COUNT(*) FROM locations');
-    if (parseInt(count.count) === 0) {
-      // Insert data only if the table is empty
-      await db.none(`
-        INSERT INTO locations (name, image_file, latitude, longitude) VALUES 
-        ('Folsom Statue', 'ArtBuilding.jpg', 40.01073, 105.26375),
-        ('Business Field', 'BusinessField.jpg', 40.006120, 105.262480),
-        ('Farrand Field', 'FarrandField.jpg', 40.00641, 105.26665),
-        ('Art Building', 'ArtBuilding.jpg', 40.00712, 105.27027),
-        ('Planetarium', 'Planetarium.jpg', 40.00354, 105.26397);
-      `);
-      console.log('Initial location data inserted');
-    } else {
-      console.log('Location data already exists, skipping insert');
-    }
-  } catch (err) {
-    console.error('Database initialization error:', err);
-  }
-};
 
 // Call the function when the app starts
 db.connect()
@@ -96,7 +62,7 @@ db.connect()
     obj.done(); // success, release the connection
     
     // Initialize the database after connection is established
-    initializeDatabase();
+
   })
   .catch(error => {
     console.log('ERROR:', error.message || error);
@@ -266,11 +232,11 @@ app.get('/scoreboard', auth, async (req, res) => {
 app.get('/geoGuess', async (req, res) => {
   console.log('getting geoguess')
   try {
-    const locations = await db.any('SELECT name, image_file AS file, latitude AS lat, longitude AS lon FROM locations');
-    console.log(locations)
-    res.render('pages/geoGuess', { locations });
-  } catch (err) {
-    console.error('Error fetching locations:', err);
+    const location = await db.any('SELECT name, image_file AS file, latitude AS lat, longitude AS lon FROM Geo_Guessr_Location');
+    console.log(location)
+    res.render('pages/geoGuess', { location });
+    } catch (err) {
+    console.error('Error fetching location:', err);
     res.status(500).send('Database error: ' + err.message);
   }
 });
@@ -285,7 +251,7 @@ app.post('/save-location', async (req, res) => {
     try {
       
       await db.none(
-        'INSERT INTO locations (name, image_file, latitude, longitude) VALUES ($1, $2, $3, $4)',
+        'INSERT INTO Geo_Guessr_Location (name, image_file, latitude, longitude) VALUES ($1, $2, $3, $4)',
         ['User Guess', 'placeholder.jpg', lat, lon]
       );
       res.json({ success: true, message: 'Location saved!' });
@@ -297,8 +263,8 @@ app.post('/save-location', async (req, res) => {
 
 app.get('/check-locations', async (req, res) => {
   try {
-    const locations = await db.any('SELECT * FROM locations');
-    res.json(locations);
+    const location = await db.any('SELECT * FROM Geo_Guessr_Location');
+    res.json(location);
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ error: err.message });

@@ -36,12 +36,13 @@ CREATE TABLE Geoguessr_Leaderboard (
 -- Stores information about each possible geoguessr location, alongside the image_id for each location
 DROP TABLE IF EXISTS Geo_Guessr_Location;
 CREATE TABLE Geo_Guessr_Location (
-    location_id INT PRIMARY KEY,
+    location_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL, --Location Name
     image_file VARCHAR(255) NOT NULL,  -- image file name
     latitude DECIMAL(9,6) NOT NULL,  -- Latitude 
     longitude DECIMAL(9,6) NOT NULL  -- Longitude
 );
+
 
 -- Stores the scores for geoguessr
 DROP TABLE IF EXISTS Geo_Guessr_Scores;
