@@ -437,6 +437,61 @@ app.post('/update-streak', auth, async (req, res) => {
   }
 });
 
+app.get('/has-completed', auth, async (req, res) => {
+  const userId = req.session.user.user_id;
+  const puzzleId = parseInt(req.query.puzzleId, 10);
+
+  if (!puzzleId) {
+    return res.status(400).json({ success: false, message: 'Puzzle ID is required' });
+  }
+
+  try {
+    // Check if there's an entry for this user and puzzle
+    const result = await db.oneOrNone(`
+      SELECT completed 
+      FROM User_Crossword_Stats 
+      WHERE user_id = $1 AND puzzle_id = $2
+    `, [userId, puzzleId]);
+
+    // If no result is found, the user hasn't completed this puzzle
+    if (!result) {
+      return res.json({ success: true, completed: false });
+    }
+
+    // Otherwise return the completion status
+    return res.json({ success: true, completed: result.completed });
+
+  } catch (err) {
+    console.error('Error checking completion status:', err);
+    res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
+app.post('/mark-completed', auth, async (req, res) => {
+  try {
+    const userId = req.session.user.user_id;
+    const { puzzleId } = req.body;
+
+    if (!puzzleId) {
+      return res.status(400).json({ success: false, message: 'Missing puzzleId in body' });
+    }
+
+    await db.none(`
+      INSERT INTO User_Crossword_Stats (user_id, puzzle_id, completed)
+      VALUES ($1, $2, TRUE)
+      ON CONFLICT (user_id, puzzle_id)
+      DO UPDATE SET completed = TRUE;
+    `, [userId, puzzleId]);
+
+    return res.json({ success: true, message: 'Puzzle marked as completed' });
+  } catch (err) {
+    console.error('Error marking puzzle complete:', err);
+    res.status(500).json({ success: false, message: 'Database error: ' + err.message });
+  }
+});
+
+
+
 app.get('/crossword', (req, res) => {
   res.render('pages/crossword');
 });
