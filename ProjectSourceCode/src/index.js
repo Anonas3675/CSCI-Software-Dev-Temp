@@ -105,7 +105,12 @@ app.use(express.static('src/resources'));
 
 
 app.get('/', (req, res) => {
-    res.redirect('/login');
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  else {
+    res.redirect('/home');
+  }
 });
 
 app.get('/login', (req, res) => {
@@ -127,7 +132,10 @@ app.post('/login', async (req, res) => {
         return res.render('pages/login', { message: 'Incorrect username or password.', error: true });
       }
 
-      req.session.user = user;
+      req.session.user = {
+        user_id: user.user_id,
+        username: user.username,
+      };
       req.session.save();
       res.status(200);
       res.redirect('/home');
@@ -186,7 +194,9 @@ app.use(auth)
 
 
 app.get('/home', auth, async (req, res) => {
+  console.log(req.session);
   res.render('pages/home', {
+      user: req.session.user,
       games: [
           { name: 'Wordle', link: '/wordle' },
           { name: 'GeoGuess', link: '/geoGuess' },
@@ -194,7 +204,12 @@ app.get('/home', auth, async (req, res) => {
           { name: 'Trivia', link: '/trivia' }
       ]
   });
+  console.log(req.session.user);
 });
+
+app.get('/profile', (req, res) => {
+  res.render('pages/profile', { user: req.session.user });
+})
 
 app.get('/scoreboard', auth, async (req, res) => {
   const type = req.query.type || 'geoguessr';
@@ -222,7 +237,7 @@ app.get('/scoreboard', auth, async (req, res) => {
   try {
     //const [results] = await db.any(leaderboard.query);
     const results = await db.any(leaderboard.query);
-    res.render('pages/scoreboard', { leaderboard: results, title: leaderboard.title, type });
+    res.render('pages/scoreboard', { leaderboard: results, title: leaderboard.title, type, user: req.session.user });
   } catch (err) {
     console.error(`Error fetching ${type} leaderboard`, err);
     res.status(500).send(`Leaderboard error: ${err.message}`);
@@ -234,7 +249,7 @@ app.get('/geoGuess', async (req, res) => {
   try {
     const location = await db.any('SELECT name, image_file AS file, latitude AS lat, longitude AS lon FROM Geo_Guessr_Location');
     console.log(location)
-    res.render('pages/geoGuess', { location });
+    res.render('pages/geoGuess', { location, user: req.session.user });
     } catch (err) {
     console.error('Error fetching location:', err);
     res.status(500).send('Database error: ' + err.message);
@@ -271,13 +286,9 @@ app.get('/check-locations', async (req, res) => {
   }
 });
 
-app.get('/welcome', (req, res) => {
-  res.json({status: success, message: 'Welcome!'});
-});
-
 // Trivia APIs
 app.get('/trivia', (req, res) => {
-  res.render('pages/trivia');
+  res.render('pages/trivia', {user: req.session.user});
 })
 
 app.get('/question', async (req, res) => {
@@ -295,7 +306,7 @@ app.get('/question', async (req, res) => {
 
 //This renders the wordle page 
 app.get('/wordle', (req, res) => {
-  res.render('pages/wordle');
+  res.render('pages/wordle', {user: req.session.user});
 })
 
 //Whenever a guess gets made, make a call to this. This should store the guess in the server
@@ -438,7 +449,7 @@ app.post('/update-streak', auth, async (req, res) => {
 });
 
 app.get('/crossword', (req, res) => {
-  res.render('pages/crossword');
+  res.render('pages/crossword', {user: req.session.user});
 });
 
 
