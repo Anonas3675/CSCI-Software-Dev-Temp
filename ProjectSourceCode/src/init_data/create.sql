@@ -126,12 +126,25 @@ CREATE TABLE Trivia_Question_Bank (
 
 
 --CROSSWORD
+-- Stores the unique id for each crossword puzzle
+DROP TABLE IF EXISTS Crossword_Puzzles CASCADE;
+CREATE TABLE Crossword_Puzzles (
+    puzzle_id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    rows INT NOT NULL,
+    columns INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  --Check if being made
+);
+
 -- Uses user_id from the User_information to show user crossword stats
 DROP TABLE IF EXISTS User_Crossword_Stats;
 CREATE TABLE User_Crossword_Stats (
-    user_id INT PRIMARY KEY,
-    successful_attempts INT,
-    FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
+    user_id INT,
+    puzzle_id INT,
+    completed BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (user_id, puzzle_id),
+    FOREIGN KEY (user_id) REFERENCES User_To_Backend(user_id),
+    FOREIGN KEY (puzzle_id) REFERENCES Crossword_Puzzles(puzzle_id)
 );
 
 --Shows the leaderboard for crossword using user_id's from user_to_backend
@@ -141,16 +154,6 @@ CREATE TABLE Crossword_Leaderboard (
     username VARCHAR(45) NOT NULL,
     highest_streak INT DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES User_Information(user_id)
-);
-
--- Stores the unique id for each crossword puzzle
-DROP TABLE IF EXISTS Crossword_Puzzles CASCADE;
-CREATE TABLE Crossword_Puzzles (
-    puzzle_id SERIAL PRIMARY KEY,
-    title VARCHAR(100) NOT NULL,
-    rows INT NOT NULL,
-    columns INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  --Check if being made
 );
 
 -- Stores the grid structure (black vs. fillable cells)
