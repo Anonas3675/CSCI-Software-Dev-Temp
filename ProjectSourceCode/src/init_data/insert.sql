@@ -76,3 +76,19 @@
 --VALUES (1092, 'What year was The University of Colorado, Boulder, founded?', '1876', '1869', '1873', '1878', 2);
 --INSERT INTO Trivia_Question_Bank (question_id, question, correct_answer, incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, difficulty) 
 --VALUES (1092, 'What year was The University of Colorado, Boulder, founded?', '1876', '1869', '1873', '1878', 2);
+
+INSERT INTO Wordle_Word_Bank (word) VALUES 
+('train'), ('crane'), ('rocky'), ('duane'), ('grown'), ('plant'), ('birch'), ('press'), 
+('heart'), ('third'), ('value'), ('dread'), ('short'), ('lower'), ('briar'), ('click'), 
+('worse'), ('mount'), ('court'), ('cover'), ('jumbo'), ('first'), ('runny'), ('rover'), 
+('toner'), ('queen'), ('sling'), ('trust'), ('ghost'), ('creed'), ('gunky'), ('grate'), 
+('event'), ('buffs'), ('gamer'), ('froth'), ('arise'), ('other'), ('otter'), ('dunce'), 
+('nerdy'), ('fairy'), ('drink'), ('smoke'), ('pearl'), ('creek'), ('ridge'), ('trail'), 
+('hiker'), ('bikes'), ('flats'), ('green'), ('study'), ('class'), ('dorms'), ('stems'), 
+('trees'), ('grass'), ('bluff'), ('stone'), ('footh'), ('alums'), ('leeds'), ('storm'), 
+('cloud'), ('glory'), ('squad'), ('score'), ('trick'), ('grind'), ('gleam'), ('shiny'), 
+('lodge'), ('swoop'), ('quick'), ('blast'), ('blaze'), ('broom'), ('grasp'), ('cling'), 
+('smile'), ('punch'), ('swirl'), ('vapor'), ('knack'), ('flora'), ('unity'), ('logic'), 
+('sweat'), ('hatch'), ('honor'), ('grain'), ('chill'), ('pinto'), ('rocky'), ('trout'), 
+('crisp'), ('glide'), ('rains'), ('scarf'), ('notes'), ('boost'), ('shred'), ('print'), 
+('cheer'), ('study'), ('scoot'), ('float');
