@@ -47,7 +47,7 @@
         <tbody>
           {{#each leaderboard}}
           <tr>
-            <td>{{@index}}</td>
+            <td>{{add @index 1}}</td>
             <td>{{this.username}}</td>
             <td>{{this.score}}</td>
           </tr>

@@ -25,6 +25,9 @@ const hbs = handlebars.create({
   helpers: {
     json: function (context) {
       return JSON.stringify(context);
+    },
+    add: function(value1, value2) {  //helper functions so the scoreboard starts at 1 instead of 0
+      return value1 + value2;
     }
   }
 }); 
