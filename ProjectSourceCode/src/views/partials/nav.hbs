@@ -1,3 +1,4 @@
+
 <header>
   <nav class="navbar navbar-expand-sm border-bottom" style="border-color: rgb(209, 186, 129) !important;">
     <div class="container-fluid px-0 d-flex justify-content-between">
@@ -6,7 +7,8 @@
         <img src="img/buffalo.gif" alt="Pixel Icon" class="me-2 pixel-icon" style="height: 40px; width: auto;">
         <button class="btn dropdown-toggle custom-btn" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false" 
                style="background-color: rgb(209, 186, 129); color: black;">
-          <i class="fas fa-user"></i> Account
+          <i class="fas fa-user"></i> 
+          {{#if user.username}}{{user.username}}{{else}}Account{{/if}}
         </button>
         <ul class="dropdown-menu" aria-labelledby="accountDropdown">
           <li><a class="dropdown-item" href="/profile">Profile</a></li>
