@@ -11,6 +11,9 @@ let selectedCell = null;
 let currentDirection = 'across';
 let currentClueNumber = null;
 
+//used to check if the user has reveal the answer so they don't gain points
+let hasRevealedAnswers = false;
+
 // Load available puzzles
 async function loadPuzzles() {
   try {
@@ -463,6 +466,8 @@ function toggleDirection() {
   highlightClue(currentClueNumber, currentDirection);
 }
 
+
+//Checks the users inputted answers
 function checkAnswers() {
   let allCorrect = true;
   const message = document.getElementById('message');
@@ -493,10 +498,29 @@ function checkAnswers() {
   
   message.style.display = 'block';
   if (allCorrect) {
+    hasCompleted(currentPuzzle).then(completed => {
+      if (!completed && !hasRevealedAnswers) {
+        updateUserStreak();
+        markComplete(currentPuzzle); // Mark it complete after updating streak
+      } 
+      else if (hasRevealedAnswers) {
+        console.log('Puzzle completed with revealed answers — streak not updated.');
+
+        // Still mark as complete even if revealed, just don't update streak
+        if (!completed) {
+          markComplete(currentPuzzle);
+        }
+      } 
+      else {
+        console.log('Puzzle already completed — streak not updated.');
+      }
+    });
+
     message.textContent = 'Congratulations! All answers are correct!';
     message.style.backgroundColor = '#4CAF50';
-    updateUserStreak();
-  } else {
+  } 
+
+  else {
     message.textContent = 'Some answers are incorrect. Keep trying!';
     message.style.backgroundColor = '#f44336';
   }
@@ -504,6 +528,49 @@ function checkAnswers() {
   setTimeout(() => {
     message.style.display = 'none';
   }, 3000);
+}
+
+
+
+//checking if the user has already completed a puzzle based on puzzle_id
+async function hasCompleted(puzzle) {
+  try {
+    const puzzleId = puzzle.puzzle_id;
+    const response = await fetch(`/has-completed?puzzleId=${puzzleId}`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.completed;
+  } catch (error) {
+    console.error('Error checking completion status:', error);
+    return false; // assume not completed if there's an error
+  }
+}
+
+
+//updates the user so they cannot get anymore points for replaying the same puzzle
+async function markComplete(puzzle) {
+  try {
+    const puzzleId = puzzle.puzzle_id;
+    const response = await fetch('/mark-completed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ puzzleId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+
+    const data = await response.json();
+    if (!data.success) console.error('Failed to mark complete:', data.message);
+  } catch (error) {
+    console.error('Error marking puzzle complete:', error);
+  }
 }
 
 //update the user wins when completing a crossword
@@ -552,6 +619,8 @@ function getCellCorrectValue(row, col) {
 }
 
 function revealSolution() {
+  hasRevealedAnswers = true;
+
   for (let row = 0; row < gridData.length; row++) {
     for (let col = 0; col < gridData[row].length; col++) {
       if (gridData[row][col] === '0') continue;

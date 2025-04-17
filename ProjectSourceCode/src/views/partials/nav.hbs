@@ -1,11 +1,13 @@
 
 <header>
-  <nav class="navbar navbar-expand-sm border-bottom">
-    <div class="container d-flex justify-content-between">
-      <!-- Left side: Account dropdown -->
-      <div class="dropdown">
-        <button class="btn btn-light dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fas fa-user"></i>
+  <nav class="navbar navbar-expand-sm border-bottom" style="border-color: rgb(209, 186, 129) !important;">
+    <div class="container-fluid px-0 d-flex justify-content-between">
+      <!-- Left side: Account dropdown with pixel art icon -->
+      <div class="dropdown d-flex align-items-center">
+        <img src="img/buffalo.gif" alt="Pixel Icon" class="me-2 pixel-icon" style="height: 40px; width: auto;">
+        <button class="btn dropdown-toggle custom-btn" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false" 
+               style="background-color: rgb(209, 186, 129); color: black;">
+          <i class="fas fa-user"></i> 
           {{#if user.username}}{{user.username}}{{else}}Account{{/if}}
         </button>
         <ul class="dropdown-menu" aria-labelledby="accountDropdown">
@@ -17,13 +19,36 @@
 
       <!-- Right side: Home and Scoreboard buttons -->
       <div class="d-flex">
-        <a id="home-link" class="nav-link me-3" href="/home">
+        <a id="home-link" class="nav-link me-3" href="/home" style="color: black;">
           <i class="fas fa-home"></i> Home
         </a>
-        <a id="scoreboard-link" class="nav-link" href="/scoreboard">
+        <a id="scoreboard-link" class="nav-link" href="/scoreboard" style=" color: black;"">
           <i class="fas fa-trophy"></i> Scoreboard
         </a>
       </div>
     </div>
   </nav>
-</header> 
+</header>
+
+<style>
+  /* Custom styles for navbar elements */
+  .navbar {
+    background-color: rgb(229, 206, 149);
+  }
+  
+  .custom-btn:hover {
+    background-color: rgb(255, 255, 255) !important;
+  }
+  
+  .nav-link:hover {
+    color: rgb(255, 255, 255) !important;
+  }
+  
+  .dropdown-menu {
+    border-color: rgb(0, 0, 0);
+  }
+  
+  .dropdown-item:hover {
+    background-color: rgb(209, 186, 129);
+  }
+</style>
