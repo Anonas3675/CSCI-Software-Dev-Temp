@@ -80,12 +80,11 @@ async function intialize(){
                 col = 0;
             }
             
-            if (!gameOver && row == height) {
+            if(!gameOver && row == height){
                 gameOver = true;
                 document.getElementById("answer").innerText = word;
-                updateWordleStats(false);  // ❌ User failed to guess
+                updateWordleStats(false);
               }
-              
         })
     } catch(err){
         console.error('Something went wrong:', err);
@@ -134,19 +133,12 @@ function update(intializiation){
     if(intializiation == 0){
         submitGuess(guess);
         if(correct == width){
-
             updateWordleStats(true); 
         }
-        
-        
     }
-
     if (correct == width){
         gameOver = true;
-        
-
     }
-    
 }
 
 //This should be called when a guess is made (i.e, enter is pressed)

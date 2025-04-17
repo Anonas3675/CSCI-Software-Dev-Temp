@@ -221,7 +221,7 @@ app.get('/scoreboard', auth, async (req, res) => {
     geoguessr: {
       query: 'SELECT username, highscore AS score FROM Geoguessr_Leaderboard ORDER BY highscore DESC',
       title: 'Geoguessr Leaderboard',
-    },    
+    },
     wordle: {
       query: 'SELECT username, highest_streak AS score FROM Wordle_Leaderboard ORDER BY highest_streak DESC',
       title: 'Wordle Leaderboard',
@@ -270,13 +270,6 @@ app.post('/saveScore', async (req, res) => {
   const newScore = Math.round(1000 - parseFloat(totalDistance) * 200); // Example scoring logic
   const userId = req.session.user.user_id;
   const username = req.session.user.username;
-  // const userId = req.session.user_id;
-  // const username = req.session.username;
-
-  if (!userId || !username) {
-    return res.status(401).json({ success: false, message: 'User not logged in' });
-  }
-
   try {
     // Check if user already has a score
     const existing = await db.oneOrNone(
