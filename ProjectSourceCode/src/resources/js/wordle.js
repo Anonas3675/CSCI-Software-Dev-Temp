@@ -83,13 +83,29 @@ async function intialize(){
             if(!gameOver && row == height){
                 gameOver = true;
                 document.getElementById("answer").innerText = word;
-            }
+                updateWordleStats(false);
+              }
         })
     } catch(err){
         console.error('Something went wrong:', err);
     }
 
 }
+
+async function updateWordleStats(didWin) {
+    try {
+      const res = await fetch('/update-wordle-stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ won: didWin })
+      });
+      const data = await res.json();
+      console.log('Wordle stats updated:', data);
+    } catch (err) {
+      console.error('Error updating Wordle stats:', err);
+    }
+  }
+  
 
 function update(intializiation){
     let correct = 0; //Used at the end to check if the word is correct
@@ -116,6 +132,9 @@ function update(intializiation){
     //Want to call update without doing this
     if(intializiation == 0){
         submitGuess(guess);
+        if(correct == width){
+            updateWordleStats(true); 
+        }
     }
     if (correct == width){
         gameOver = true;
