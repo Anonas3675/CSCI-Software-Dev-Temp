@@ -1,36 +1,31 @@
-
-<header>
-  <nav class="navbar navbar-expand-sm border-bottom" style="border-color: rgb(209, 186, 129) !important;">
-    <div class="container-fluid px-0 d-flex justify-content-between">
-      <!-- Left side: Account dropdown with pixel art icon -->
-      <div class="dropdown d-flex align-items-center">
-        <img src="img/buffalo.gif" alt="Pixel Icon" class="me-2 pixel-icon" style="height: 40px; width: auto;">
-        <button class="btn dropdown-toggle custom-btn" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false" 
-               style="background-color: rgb(209, 186, 129); color: black;">
-          <i class="fas fa-user"></i> 
-          {{#if user.username}}{{user.username}}{{else}}Account{{/if}}
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="accountDropdown">
-          <li><a class="dropdown-item" href="/profile">Profile</a></li>
-          <li><a class="dropdown-item" href="/settings">Settings</a></li>
-          <li><a class="dropdown-item" href="/logout">Logout</a></li>
-        </ul>
-      </div>
-
-      <!-- Right side: Home and Scoreboard buttons -->
-      <div class="d-flex">
-        <a id="home-link" class="nav-link me-3" href="/home" style="color: black;">
-          <i class="fas fa-home"></i> Home
-        </a>
-        <a id="scoreboard-link" class="nav-link" href="/scoreboard" style=" color: black;"">
-          <i class="fas fa-trophy"></i> Scoreboard
-        </a>
-      </div>
-    </div>
-  </nav>
-</header>
-
 <style>
+   @font-face {
+      font-family: 'Pixelify Sans';
+      src: url('../fonts/PixelifySans-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Pixelify Sans';
+      src: url('../fonts/PixelifySans-Medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Pixelify Sans';
+      src: url('../fonts/PixelifySans-Bold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    body {
+      font-family: 'Pixelify Sans';
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
   /* Custom styles for navbar elements */
   .navbar {
     background-color: rgb(229, 206, 149);
@@ -52,3 +47,33 @@
     background-color: rgb(209, 186, 129);
   }
 </style>
+
+<header>
+  <nav class="navbar navbar-expand-sm border-bottom" style="border-color: rgb(209, 186, 129) !important;">
+    <div class="container-fluid px-0 d-flex justify-content-between">
+      <!-- Left side: Account dropdown with pixel art icon -->
+      <div class="dropdown d-flex align-items-center">
+        <img src="img/buffalo.gif" alt="Pixel Icon" class="me-2 pixel-icon" style="height: 40px; width: auto;">
+        <button class="btn dropdown-toggle custom-btn" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false" 
+               style="background-color: rgb(209, 186, 129); color: black;">
+          <i class="fas fa-user"></i> 
+          {{#if user.username}}{{user.username}}{{else}}Account{{/if}}
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="accountDropdown">
+          <li><a class="dropdown-item" href="/profile">Profile</a></li>
+          <li><a class="dropdown-item" href="/logout">Logout</a></li>
+        </ul>
+      </div>
+
+      <!-- Right side: Home and Scoreboard buttons with margin-right to pull them away from edge -->
+      <div class="d-flex pe-4">
+        <a id="home-link" class="nav-link me-3" href="/home" style="color: black;">
+          <i class="fas fa-home"></i> Home
+        </a>
+        <a id="scoreboard-link" class="nav-link" href="/scoreboard" style="color: black;">
+          <i class="fas fa-trophy"></i> Scoreboard
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
