@@ -259,25 +259,44 @@ app.get('/geoGuess', async (req, res) => {
   }
 });
 
-app.post('/save-location', async (req, res) => {
-    const { lat, lon } = req.body;
-  
-    if (!lat || !lon) {
-      return res.status(400).json({ success: false, message: 'Missing coordinates' });
-    }
-  
-    try {
-      
+app.post('/saveScore', async (req, res) => {
+  const { totalDistance } = req.body;
+
+  if (typeof totalDistance === 'undefined') {
+    return res.status(400).json({ success: false, message: 'Missing score' });
+  }
+
+  // Convert distance to "score" (e.g., lower is better, so maybe reverse it)
+  const newScore = Math.round(1000 - parseFloat(totalDistance) * 200); // Example scoring logic
+  const userId = req.session.user.user_id;
+  const username = req.session.user.username;
+  try {
+    // Check if user already has a score
+    const existing = await db.oneOrNone(
+      'SELECT highscore FROM Geoguessr_Leaderboard WHERE user_id = $1',
+      [userId]
+    );
+
+    if (!existing) {
+      // New user entry
       await db.none(
-        'INSERT INTO Geo_Guessr_Location (name, image_file, latitude, longitude) VALUES ($1, $2, $3, $4)',
-        ['User Guess', 'placeholder.jpg', lat, lon]
+        'INSERT INTO Geoguessr_Leaderboard (user_id, username, highscore) VALUES ($1, $2, $3)',
+        [userId, username, newScore]
       );
-      res.json({ success: true, message: 'Location saved!' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, message: 'Database error: ' + err.message });
+    } else if (newScore > existing.highscore) {
+      // Only update if new score is better
+      await db.none(
+        'UPDATE Geoguessr_Leaderboard SET highscore = $1 WHERE user_id = $2',
+        [newScore, userId]
+      );
     }
-});
+
+    res.json({ success: true, message: 'Score saved to leaderboard' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Database error: ' + err.message });
+  }
+}); 
 
 app.get('/check-locations', async (req, res) => {
   try {
@@ -295,15 +314,76 @@ app.get('/trivia', (req, res) => {
 })
 
 app.get('/question', async (req, res) => {
-  const difficulty = req.query.difficulty;
+  const difficulty = parseInt(req.query.difficulty) || 2;
+
   try {
-    const question = await db.one('SELECT question, question_id FROM Trivia_Question_Bank WHERE difficulty = $1 ORDER BY RANDOM() LIMIT 1;', [difficulty])
-    res.json({question: question, question_id: question_id});
+    const question = await db.one(
+      `SELECT question_id, question, correct_answer, incorrect_answer_1, incorrect_answer_2, incorrect_answer_3
+       FROM Trivia_Question_Bank
+       WHERE difficulty = $1
+       ORDER BY RANDOM() LIMIT 1`,
+      [difficulty]
+    );
+    res.json({ question });
   } catch (err) {
-    console.error('Error selecting question:', err);
-    res.status(500).json({error: err.message});
+    console.error('Error fetching question:', err);
+    res.status(500).json({ error: 'Failed to fetch trivia question.' });
   }
 });
+
+app.post('/submit-trivia-answer', auth, async (req, res) => {
+  const userId = req.session.user.user_id;
+  const { correct } = req.body;
+
+  try {
+    const stats = await db.oneOrNone(
+      `SELECT current_streak, highest_streak FROM User_Trivia_Stats WHERE user_id = $1`,
+      [userId]
+    );
+
+    if (!stats) {
+      await db.none(
+        `INSERT INTO User_Trivia_Stats (user_id, current_streak, highest_streak) VALUES ($1, $2, $2)`,
+        [userId, correct ? 1 : 0]
+      );
+    } else {
+      const newStreak = correct ? stats.current_streak + 1 : 0;
+      const newHighest = Math.max(stats.highest_streak, newStreak);
+
+      await db.none(
+        `UPDATE User_Trivia_Stats
+         SET current_streak = $1, highest_streak = $2
+         WHERE user_id = $3`,
+        [newStreak, newHighest, userId]
+      );
+    }
+
+    // Leaderboard update
+    const lb = await db.oneOrNone(
+      `SELECT highest_streak FROM Trivia_Leaderboard WHERE user_id = $1`,
+      [userId]
+    );
+
+    if (!lb && correct) {
+      await db.none(
+        `INSERT INTO Trivia_Leaderboard (user_id, username, highest_streak)
+         VALUES ($1, $2, 1)`,
+        [userId, req.session.user.username]
+      );
+    } else if (lb && correct && stats.current_streak + 1 > lb.highest_streak) {
+      await db.none(
+        `UPDATE Trivia_Leaderboard SET highest_streak = $1 WHERE user_id = $2`,
+        [stats.current_streak + 1, userId]
+      );
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error submitting answer:', err);
+    res.status(500).json({ success: false, error: 'Failed to submit answer.' });
+  }
+});
+
 
 //Wordle APIs
 
@@ -311,6 +391,75 @@ app.get('/question', async (req, res) => {
 app.get('/wordle', (req, res) => {
   res.render('pages/wordle', {user: req.session.user});
 })
+
+
+app.post('/update-wordle-stats', auth, async (req, res) => {
+  const { won } = req.body;
+  const userId = req.session.user.user_id;
+  const username = req.session.user.username;
+
+  try {
+    // Check if the user already has stats
+    const stats = await db.oneOrNone(
+      'SELECT * FROM User_Wordle_Stats WHERE user_id = $1',
+      [userId]
+    );
+
+    if (!stats) {
+      // New user, insert default values
+      await db.none(
+        `INSERT INTO User_Wordle_Stats (user_id, successful_attempts, games_played, win_streak, highest_win_streak)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [userId, won ? 1 : 0, 1, won ? 1 : 0, won ? 1 : 0]
+      );
+    } else {
+      const newGamesPlayed = stats.games_played + 1;
+      const newSuccessfulAttempts = stats.successful_attempts + (won ? 1 : 0);
+      const newWinStreak = won ? stats.win_streak + 1 : 0;
+      const newHighestStreak = Math.max(stats.highest_win_streak, newWinStreak);
+
+      await db.none(
+        `UPDATE User_Wordle_Stats
+         SET successful_attempts = $1,
+             games_played = $2,
+             win_streak = $3,
+             highest_win_streak = $4
+         WHERE user_id = $5`,
+        [newSuccessfulAttempts, newGamesPlayed, newWinStreak, newHighestStreak, userId]
+      );
+    }
+
+    // Update leaderboard
+    const leaderboard = await db.oneOrNone(
+      'SELECT * FROM Wordle_Leaderboard WHERE user_id = $1',
+      [userId]
+    );
+
+    if (!leaderboard && won) {
+      await db.none(
+        `INSERT INTO Wordle_Leaderboard (user_id, username, highest_streak)
+         VALUES ($1, $2, 1)`,
+        [userId, username]
+      );
+    } else if (won && stats && stats.win_streak + 1 > leaderboard.highest_streak) {
+      await db.none(
+        `UPDATE Wordle_Leaderboard
+         SET highest_streak = $1
+         WHERE user_id = $2`,
+        [stats.win_streak + 1, userId]
+      );
+    }
+
+    res.json({ success: true, message: 'Wordle stats updated' });
+  } catch (err) {
+    console.error('Error updating Wordle stats:', err);
+    res.status(500).json({ success: false, message: 'Error updating stats' });
+  }
+});
+
+
+
+
 
 //Whenever a guess gets made, make a call to this. This should store the guess in the server
 app.post('/saveguess', (req, res) => {
