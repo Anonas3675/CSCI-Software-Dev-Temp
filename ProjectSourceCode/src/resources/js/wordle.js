@@ -26,7 +26,7 @@ window.onload = async function(){ //This function is called when the window is l
 async function intialize(){
     //Create game board
     try{
-        document.getElementById("board").style.width = ((width*60) + 50) + 'px';
+        document.getElementById("board").style.width = ((width*65)) + 'px';
         document.getElementById("board").style.height = ((height*60) + 60) + 'px';
         const guesses = await getGuesses();
         for (let r=0; r < height; r++){
