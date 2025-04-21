@@ -161,6 +161,16 @@ app.post('/register', async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
+      //Need to make a request to the database before adding a user :)
+      const existingUserQuery = 'SELECT 1 FROM User_Information WHERE username = $1 LIMIT 1';
+      const result = await db.query(existingUserQuery, [username]);
+      console.log('This is the response of the query:');
+      console.log(result);
+      if (result.length > 0) {
+        console.log('Username Already Exists');
+        return res.render('pages/register', {message: 'Username already in use, please select a different username', error: true});
+      }
+
       const query = 'INSERT INTO User_Information (username, user_id, password) VALUES ($1, $2, $3)';
 
       const user_serial = await db.one('INSERT INTO User_To_Backend DEFAULT VALUES RETURNING user_id');
@@ -168,11 +178,11 @@ app.post('/register', async (req, res) => {
 
       await db.none(query, [username, user_id, hashedPassword]);
       res.status(200);
-      res.redirect('/login');
+      res.redirect('pages/login');
     } catch (err) {
         res.status(400);
         console.error('Error registering user:', err);
-        res.redirect('/register');
+        res.redirect('pages/register');
     }
 });
 

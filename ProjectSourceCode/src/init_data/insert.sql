@@ -23,23 +23,6 @@
 --INSERT INTO User_Trivia_Stats (user_id, current_streak, highest_streak) VALUES (1, 6, 10);
 
 
-INSERT INTO Trivia_Question_Bank (question_id, question, correct_answer, incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, difficulty) VALUES
-(2001, 'What year was CU founded?', '1876', '1863', '1907', '1935', 2),
-(2002, 'What is CU’s mascot?', 'Ralphie the Buffalo', 'CAM the Ram', 'Rocky the Mountain Lion', 'Victor E. Bull', 1),
-(2003, 'What is the famous rock formation near CU Boulder?', 'Flatirons', 'Rocky Moutains', 'Garden of the Gods', 'Red Rocks', 2),
-(2004, 'What is the name of CU’s football Stadium?', 'Folsom Field', 'Farrand Field', 'Kittridge Field', 'William''s Field', 2),
-(2005, 'Who is CU’s head football coach?', 'Deion Sanders', 'Jim Irsay', 'Jim Harbaugh', 'Tad Boyle', 1),
-(2006, 'What chant do students say during football games?', 'SKO BUFFS', 'Rock Chalk Jay Hawk', 'GOOOO Buffaloes!', 'STAMPEDE', 2),
-(2007, 'What is the name of CU’s marching band?', 'Golden Buffaloes', 'Marching Buffaloes', 'Black and Gold Buffaloes', 'Chanting Buffaloes', 3),
-(2008, 'What is the name of CU’s library?', 'Norlin Library', 'Dawson Library', 'Prime Library', 'William Library', 1),
-(2009, 'What is the largest major in the school of Engineering (by students) at CU?', 'Aerospace Engineering', 'Computer Science', 'Mechanical Engineering', 'Electrical Engineering', 2),
-(2010, 'What school is CU’s biggest rival?', 'Colorado State University', 'University of Kansas', 'University of Nebraska', 'Colorado School of Mines', 1),
-(2011, 'Where is the largest collection of dorms within main campus?', 'Kittridge', 'Old Main', 'Central Campus', 'William’s Village', 1),
-(2012, 'Where is the largest collection of dorms outside main campus?', 'William’s Village', 'Old Main', 'East Campus', 'Kittridge', 1),
-(2013, 'What is the name of the oldest section of CU’s campus?', 'Old main', 'East Campus', 'Central Campus', 'Old campus', 2),
-(2014, 'What is CU Boulder’s Elevation?', '5,430', '5,280', '5,060', '5,120', 3),
-(2015, 'What Ski resort does Boulder have free bus rides to?', 'Eldora', 'Winter Park', 'Keystone', 'Vail', 2);
-
 
 
 
