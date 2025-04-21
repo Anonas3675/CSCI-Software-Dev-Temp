@@ -12,6 +12,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcryptjs'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
+const fs = require('fs'); //Dylan added this, used for reading out possible wordle guesses
 
 // *****************************************************
 // <!-- Section 2 : Connect to DB -->
@@ -333,6 +334,25 @@ app.get('/getguess', (req, res) => {
   res.json(previousGuesses);
 });
 
+//This reads out the json file and stores its contents in wordlist
+const wordlist = JSON.parse(fs.readFileSync('src/resources/json/wordle-allowed-guesses2.json', 'utf-8'));
+
+//Wordle API for checking a guess
+app.post('/checkguess', async (req, res) => {
+  const guess = req.body.guess;
+  if(!guess){
+    return res.status(400).json({ error: 'No word provided' });
+  }
+  try{
+    //const apiResponse = await fetch(`https://api.datamuse.com/words?sp=${guess}&max=1`); //Make a request to the api
+    //const data = await apiResponse.json(); //get a response
+    //const isValid = (data.length > 0) && (data[0].word.toLowerCase() === guess.toLowerCase());
+    const isValid2 = wordlist.includes(guess.toLowerCase());
+    res.json({valid: isValid2});
+  } catch(err) {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
 //API's for Crossword
 
 // Get all puzzles
