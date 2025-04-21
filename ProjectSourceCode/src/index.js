@@ -168,7 +168,7 @@ app.post('/register', async (req, res) => {
       console.log(result);
       if (result.length > 0) {
         console.log('Username Already Exists');
-        return res.redirect('/register');
+        return res.render('pages/register', {message: 'Username already in use, please select a different username', error: true});
       }
 
       const query = 'INSERT INTO User_Information (username, user_id, password) VALUES ($1, $2, $3)';
@@ -178,11 +178,11 @@ app.post('/register', async (req, res) => {
 
       await db.none(query, [username, user_id, hashedPassword]);
       res.status(200);
-      res.redirect('/login');
+      res.redirect('pages/login');
     } catch (err) {
         res.status(400);
         console.error('Error registering user:', err);
-        res.redirect('/register');
+        res.redirect('pages/register');
     }
 });
 
