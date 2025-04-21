@@ -76,7 +76,11 @@
       return R * c;
     }
 
-    let currentLocation = location[Math.floor(Math.random() * location.length)];
+    //let currentLocation = location[Math.floor(Math.random() * location.length)];
+    //fixed shuffle?
+    let gameLocations = shuffleArray([...location]);
+    let roundLocations = gameLocations.slice(0, 3);
+    let currentLocation = roundLocations[0];
 
     const viewer = new Viewer({
       container: document.querySelector('#viewer'),
@@ -141,12 +145,12 @@
       pinElement.style.top = `${clickY}px`;
       pinElement.style.width = '35px';
       pinElement.style.height = '25px';
-      pinElement.style.transform = 'translate(1339%, -62%)';
+      pinElement.style.transform = 'translate(1450%, -58%)';
       pinElement.style.zIndex = '1000';
 
       // remove later 
-      {{!-- document.getElementById('coords-display').innerText = 
-      `📍 Selected Location: Lat ${clickedLat.toFixed(6)}, Lon ${clickedLon.toFixed(6)}`; --}}
+      document.getElementById('coords-display').innerText = 
+      `📍 Selected Location: Lat ${clickedLat.toFixed(6)}, Lon ${clickedLon.toFixed(6)}`;
 
       
       document.getElementById('map-container').appendChild(pinElement);
@@ -178,9 +182,9 @@
         correctPin.style.position = 'absolute';
         correctPin.style.left = `${correctX}px`;
         correctPin.style.top = `${correctY}px`;
-        correctPin.style.width = '35px';
-        correctPin.style.height = '340px';
-        correctPin.style.transform = 'translate(1339%, -62%)';
+        correctPin.style.width = '32px';
+        correctPin.style.height = '35px';
+        correctPin.style.transform = 'translate(1600%, -70%)';
         correctPin.style.zIndex = '1000';
 
         document.getElementById('map-container').appendChild(correctPin);
@@ -233,15 +237,14 @@
       return array;
     }
 
-    let gameLocations = shuffleArray([...location]);
-    let roundLocations = gameLocations.slice(0, 3);
+   
 
     function resetRound() {
       if (currentRound < 3) {
         resultEl.style.display = 'none'; // Hide it again when resetting
         resultEl.innerText = "";
         currentLocation = roundLocations[currentRound];
-        viewer.setPanorama(`../img/${currentLocation.file}`);
+       viewer.setPanorama(`../img/${currentLocation.file}`);
         mapSection.style.display = 'none';
         backBtn.style.display = 'none';
         resultEl.innerText = "";

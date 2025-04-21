@@ -255,11 +255,14 @@ VALUES
 -- Geo_Guessr_Location
 
 INSERT INTO Geo_Guessr_Location (name, image_file, latitude, longitude) VALUES 
-        ('Folsom Statue', 'FolsomStatue.jpg', 40.008712, -105.262970),
-        ('Business Field', 'BusinessField.jpg', 40.007195, -105.262615),
-        ('Farrand Field', 'FarrandField.jpg', 40.007322, -105.264290),
-        ('Art Building', 'ArtBuilding.jpg', 40.007588, -105.265977),
-        ('Planetarium', 'Planetarium.jpg', 40.006417, -105.263009);
+        ('Folsom Statue', 'FolsomStatue.jpg', 40.008774,  -105.262906),
+        ('Business Field', 'BusinessField.jpg', 40.007204,  -105.262583),
+        ('Farrand Field', 'FarrandField.jpg', 40.007260,  -105.264368),
+        ('Art Building', 'ArtBuilding.jpg',40.007595,  -105.265970),
+        ('Planetarium', 'Planetarium.jpg', 40.006408,  -105.263004);
+
+
+
 
 
         
