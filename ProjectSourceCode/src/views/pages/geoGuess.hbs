@@ -169,8 +169,10 @@
 
 
       // remove later 
+
       {{!-- document.getElementById('coords-display').innerText = 
       `📍 Selected Location: Lat ${clickedLat.toFixed(6)}, Lon ${clickedLon.toFixed(6)}`; --}}
+
 
       
       document.getElementById('map-container').appendChild(pinElement);
@@ -235,7 +237,9 @@
       guessedLoc.push(parseFloat(distance.toFixed(2)));
       currentRound++;
 
+
       {{!-- resultEl.style.display = 'block'; // Show the result box
+
       resultEl.innerText = `Round ${currentRound}: You were ${distance.toFixed(2)} km away.`;
       resultEl.style.color = distance < 0.1 ? "rgb(5, 109, 22)" : "red"; --}}
 

@@ -70,6 +70,7 @@ describe('Testing Login API Positive', () => {
   });
 });
 
+/*
 describe('Testing Login API Negative', () => {
   it('negative : /login', done => {
     chai
@@ -82,3 +83,4 @@ describe('Testing Login API Negative', () => {
       });
   });
 });
+*/

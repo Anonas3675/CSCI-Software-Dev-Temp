@@ -22,6 +22,10 @@
 --INSERT INTO User_Trivia_Stats (user_id, current_streak, highest_streak) VALUES (1, 6, 10);
 --INSERT INTO User_Trivia_Stats (user_id, current_streak, highest_streak) VALUES (1, 6, 10);
 
+
+
+
+
 -- User_Crossword_Stats
 --INSERT INTO User_Crossword_Stats (user_id, successful_attempts) VALUES (1, 40);
 --INSERT INTO User_Crossword_Stats (user_id, successful_attempts) VALUES (1, 40);
@@ -44,7 +48,7 @@
 
 -- Insert the Crossword puzzle
 INSERT INTO Crossword_Puzzles (puzzle_id, title, rows, columns)
-VALUES (1, 'CU Puzzle', 12, 11);
+VALUES (1, 'CU Puzzle #1', 12, 11);
 
 -- Insert the grid structure
 -- First define the black cells (is_black = TRUE)
@@ -96,7 +100,7 @@ VALUES
 (1, 4, 9, TRUE),
 (1, 4, 10, TRUE),
 
---blakcs for row 5
+--blacks for row 5
 (1, 5, 5, TRUE),
 (1, 5, 10, TRUE),
 
@@ -251,6 +255,201 @@ VALUES
 (1, 4, 'down', 'CU sports conference', 'BIG12', 3, 6),
 (1, 5, 'down', 'The name of CU Boulder football stadium', 'FOLSOM', 3, 8),
 (1, 7, 'down', 'CU Mascot', 'RALPHIE', 5, 1);
+
+
+
+
+-- Insert the Crossword puzzle
+INSERT INTO Crossword_Puzzles (puzzle_id, title, rows, columns)
+VALUES (2, 'CU Puzzle #2', 9, 14);
+
+-- Insert the grid structure
+-- First define the black cells (is_black = TRUE)
+INSERT INTO Crossword_Grid (puzzle_id, row_index, col_index, is_black)
+VALUES 
+--blacks for row 0
+(2, 0, 0, TRUE),
+(2, 0, 1, TRUE),
+(2, 0, 2, TRUE),
+(2, 0, 3, TRUE),
+(2, 0, 4, TRUE),
+(2, 0, 6, TRUE),
+(2, 0, 7, TRUE),
+(2, 0, 8, TRUE),
+(2, 0, 9, TRUE),
+(2, 0, 10, TRUE),
+(2, 0, 12, TRUE),
+(2, 0, 13, TRUE),
+
+--blacks for row1
+(2, 1, 0, TRUE),
+(2, 1, 2, TRUE),
+(2, 1, 3, TRUE),
+(2, 1, 4, TRUE),
+(2, 1, 6, TRUE),
+
+--blacks for row2
+(2, 2, 4, TRUE),
+(2, 2, 6, TRUE),
+(2, 2, 8, TRUE),
+(2, 2, 9, TRUE),
+(2, 2, 10, TRUE),
+(2, 2, 12, TRUE),
+(2, 2, 13, TRUE),
+
+--blacks for row3
+(2, 3, 0, TRUE),
+(2, 3, 2, TRUE),
+(2, 3, 4, TRUE),
+(2, 3, 6, TRUE),
+(2, 3, 8, TRUE),
+(2, 3, 9, TRUE),
+(2, 3, 10, TRUE),
+(2, 3, 12, TRUE),
+(2, 3, 13, TRUE),
+
+--blacks for row 4
+(2, 4, 0, TRUE),
+(2, 4, 2, TRUE),
+(2, 4, 6, TRUE),
+(2, 4, 8, TRUE),
+(2, 4, 10, TRUE),
+(2, 4, 12, TRUE),
+(2, 4, 13, TRUE),
+
+--blakcs for row 5
+(2, 5, 0, TRUE),
+(2, 5, 2, TRUE),
+(2, 5, 4, TRUE),
+(2, 5, 12, TRUE),
+(2, 5, 13, TRUE),
+
+--blacks for row 6
+(2, 6, 0, TRUE),
+(2, 6, 1, TRUE),
+(2, 6, 2, TRUE),
+(2, 6, 4, TRUE),
+(2, 6, 6, TRUE),
+(2, 6, 8, TRUE),
+(2, 6, 10, TRUE),
+(2, 6, 12, TRUE),
+(2, 6, 13, TRUE),
+
+--blacks for row 7
+(2, 7, 0, TRUE),
+(2, 7, 1, TRUE),
+(2, 7, 2, TRUE),
+(2, 7, 3, TRUE),
+(2, 7, 4, TRUE),
+(2, 7, 5, TRUE),
+(2, 7, 6, TRUE),
+(2, 7, 8, TRUE),
+(2, 7, 10, TRUE),
+(2, 7, 12, TRUE),
+(2, 7, 13, TRUE),
+
+--blacks for row 8
+(2, 8, 0, TRUE),
+(2, 8, 1, TRUE),
+(2, 8, 2, TRUE),
+(2, 8, 3, TRUE),
+(2, 8, 4, TRUE),
+(2, 8, 5, TRUE),
+(2, 8, 6, TRUE),
+(2, 8, 8, TRUE),
+(2, 8, 10, TRUE),
+(2, 8, 11, TRUE),
+(2, 8, 12, TRUE),
+(2, 8, 13, TRUE);
+
+-- Now insert the other cells and set the cell numbers
+INSERT INTO Crossword_Grid (puzzle_id, row_index, col_index, is_black, cell_number) VALUES
+
+-- Row 0
+(2, 0, 5, FALSE, 1),
+(2, 0, 11, FALSE, 2), 
+
+-- Row 1
+(2, 1, 1, FALSE, 3),
+(2, 1, 5, FALSE, NULL),
+(2, 1, 7, FALSE, 4),
+(2, 1, 8, FALSE, NULL),
+(2, 1, 9, FALSE, NULL),
+(2, 1, 10, FALSE, NULL),
+(2, 1, 11, FALSE, NULL),
+(2, 1, 12, FALSE, NULL),
+(2, 1, 13, FALSE, NULL),
+
+--Row 2
+(2, 2, 0, FALSE, 5),
+(2, 2, 1, FALSE, NULL),
+(2, 2, 2, FALSE, NULL),
+(2, 2, 3, FALSE, 6),
+(2, 2, 5, FALSE, NULL),
+(2, 2, 7, FALSE, NULL),
+(2, 2, 11, FALSE, NULL),
+
+-- Row 3
+(2, 3, 1, FALSE, NULL),
+(2, 3, 3, FALSE, NULL),
+(2, 3, 5, FALSE, NULL),
+(2, 3, 7, FALSE, NULL),
+(2, 3, 11, FALSE, NULL),
+
+-- Row 4
+(2, 4, 1, FALSE, NULL),
+(2, 4, 3, FALSE, 7),
+(2, 4, 4, FALSE, NULL),
+(2, 4, 5, FALSE, NULL),
+(2, 4, 7, FALSE, NULL),
+(2, 4, 9, FALSE, 8),
+(2, 4, 11, FALSE, NULL),
+
+-- Row 5
+(2, 5, 1, FALSE, NULL),
+(2, 5, 3, FALSE, NULL),
+(2, 5, 5, FALSE, 9),
+(2, 5, 6, FALSE, NULL),
+(2, 5, 7, FALSE, NULL),
+(2, 5, 8, FALSE, NULL),
+(2, 5, 9, FALSE, NULL),
+(2, 5, 10, FALSE, NULL),
+(2, 5, 11, FALSE, NULL),
+
+-- Row 6
+(2, 6, 3, FALSE, NULL),
+(2, 6, 5, FALSE, NULL),
+(2, 6, 7, FALSE, NULL),
+(2, 6, 9, FALSE, NULL),
+(2, 6, 11, FALSE, NULL),
+
+-- Row 7
+(2, 7, 7, FALSE, NULL),
+(2, 7, 9, FALSE, NULL),
+(2, 7, 11, FALSE, NULL),
+
+-- Row 8
+(2, 8, 7, FALSE, NULL),
+(2, 8, 9, FALSE, NULL);
+
+
+-- Insert the clues
+INSERT INTO Crossword_Clues (puzzle_id, clue_number, direction, clue_text, answer, start_row, start_col)
+VALUES
+-- Across clues
+(2, 4, 'across', 'Former CU basketball player & winner of the 2004 NBA Finals', 'BILLUPS', 1, 7),
+(2, 5, 'across', 'CU humanoid mascot', 'CHIP', 2, 0),
+(2, 7, 'across', 'Biggest dining hall on campus', 'C4C', 4, 3),
+(2, 9, 'across', 'First building on the CU Boulder campus', 'OLDMAIN', 5, 5),
+
+-- Down clues
+(2, 1, 'down', 'Keith Miller pro team', 'BRONCOS', 0, 5),
+(2, 2, 'down', 'Business and engineering connector', 'RUSTANDY', 0, 11),
+(2, 3, 'down', 'Former CU basketball player & winner of 2024 NBA Finals', 'WHITE', 1, 1),
+(2, 4, 'down', 'Main road running through campus', 'BROADWAY', 1, 7),
+(2, 6, 'down', 'Previous CU football conference', 'PAC12', 2, 3),
+(2, 8, 'down', 'Da Silva new basketball team', 'MAGIC', 4, 9);
+
 
 -- Geo_Guessr_Location
 

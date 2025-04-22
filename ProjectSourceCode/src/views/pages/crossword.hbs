@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +10,7 @@
 </head>
 
 <body>
+  <div class="bg-container"></div>
   <div class="puzzle-wrapper">
     <h1>CU Boulder Puzzle</h1>
     
@@ -22,9 +24,10 @@
     
     <div id="loading" class="loading">Loading puzzle</div>
     
-    <div id="crossword-container" class="crossword-container"></div>
+    <div id="crossword-container" class="crossword-container" style="display: none;"></div>    {{!-- Need to make this not appear until a crossword is loaded --}}
     
-    <div class="clues-container">
+    <!-- This container will be initially hidden -->
+    <div class="clues-container" id="clues-container" style="display: none;">
       <div class="clue-list">
         <div class="clue-heading">Across</div>
         <div id="across-clues"></div>

@@ -12,6 +12,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcryptjs'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
+const fs = require('fs'); //Dylan added this, used for reading out possible wordle guesses
 
 // *****************************************************
 // <!-- Section 2 : Connect to DB -->
@@ -37,8 +38,8 @@ const hbs = handlebars.create({
 
 // database configuration
 const dbConfig = {
-  host: 'db', // the database server
-  port: 5432, // the database port
+  host: process.env.POSTGRES_HOST, // the database server
+  port: process.env.POSTGRES_PORT, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
   password: process.env.POSTGRES_PASSWORD, // the password of the user account
@@ -162,6 +163,16 @@ app.post('/register', async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
+      //Need to make a request to the database before adding a user :)
+      const existingUserQuery = 'SELECT 1 FROM User_Information WHERE username = $1 LIMIT 1';
+      const result = await db.query(existingUserQuery, [username]);
+      console.log('This is the response of the query:');
+      console.log(result);
+      if (result.length > 0) {
+        console.log('Username Already Exists');
+        return res.render('pages/register', {message: 'Username already in use, please select a different username', error: true});
+      }
+
       const query = 'INSERT INTO User_Information (username, user_id, password) VALUES ($1, $2, $3)';
 
       const user_serial = await db.one('INSERT INTO User_To_Backend DEFAULT VALUES RETURNING user_id');
@@ -169,11 +180,11 @@ app.post('/register', async (req, res) => {
 
       await db.none(query, [username, user_id, hashedPassword]);
       res.status(200);
-      res.redirect('/login');
+      res.redirect('pages/login');
     } catch (err) {
         res.status(400);
         console.error('Error registering user:', err);
-        res.redirect('/register');
+        res.redirect('pages/register');
     }
 });
 
@@ -269,7 +280,9 @@ app.post('/saveScore', async (req, res) => {
   }
 
   // Convert distance to "score" (e.g., lower is better, so maybe reverse it)
+
   const newScore = Math.round(1000 - parseFloat(totalDistance) * 600); // Example scoring logic
+
   const userId = req.session.user.user_id;
   const username = req.session.user.username;
   try {
@@ -316,15 +329,76 @@ app.get('/trivia', (req, res) => {
 })
 
 app.get('/question', async (req, res) => {
-  const difficulty = req.query.difficulty;
+  const difficulty = parseInt(req.query.difficulty) || 2;
+
   try {
-    const question = await db.one('SELECT question, question_id FROM Trivia_Question_Bank WHERE difficulty = $1 ORDER BY RANDOM() LIMIT 1;', [difficulty])
-    res.json({question: question, question_id: question_id});
+    const question = await db.one(
+      `SELECT question_id, question, correct_answer, incorrect_answer_1, incorrect_answer_2, incorrect_answer_3
+       FROM Trivia_Question_Bank
+       WHERE difficulty = $1
+       ORDER BY RANDOM() LIMIT 1`,
+      [difficulty]
+    );
+    res.json({ question });
   } catch (err) {
-    console.error('Error selecting question:', err);
-    res.status(500).json({error: err.message});
+    console.error('Error fetching question:', err);
+    res.status(500).json({ error: 'Failed to fetch trivia question.' });
   }
 });
+
+app.post('/submit-trivia-answer', auth, async (req, res) => {
+  const userId = req.session.user.user_id;
+  const { correct } = req.body;
+
+  try {
+    const stats = await db.oneOrNone(
+      `SELECT current_streak, highest_streak FROM User_Trivia_Stats WHERE user_id = $1`,
+      [userId]
+    );
+
+    if (!stats) {
+      await db.none(
+        `INSERT INTO User_Trivia_Stats (user_id, current_streak, highest_streak) VALUES ($1, $2, $2)`,
+        [userId, correct ? 1 : 0]
+      );
+    } else {
+      const newStreak = correct ? stats.current_streak + 1 : 0;
+      const newHighest = Math.max(stats.highest_streak, newStreak);
+
+      await db.none(
+        `UPDATE User_Trivia_Stats
+         SET current_streak = $1, highest_streak = $2
+         WHERE user_id = $3`,
+        [newStreak, newHighest, userId]
+      );
+    }
+
+    // Leaderboard update
+    const lb = await db.oneOrNone(
+      `SELECT highest_streak FROM Trivia_Leaderboard WHERE user_id = $1`,
+      [userId]
+    );
+
+    if (!lb && correct) {
+      await db.none(
+        `INSERT INTO Trivia_Leaderboard (user_id, username, highest_streak)
+         VALUES ($1, $2, 1)`,
+        [userId, req.session.user.username]
+      );
+    } else if (lb && correct && stats.current_streak + 1 > lb.highest_streak) {
+      await db.none(
+        `UPDATE Trivia_Leaderboard SET highest_streak = $1 WHERE user_id = $2`,
+        [stats.current_streak + 1, userId]
+      );
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error submitting answer:', err);
+    res.status(500).json({ success: false, error: 'Failed to submit answer.' });
+  }
+});
+
 
 //Wordle APIs
 
@@ -332,6 +406,75 @@ app.get('/question', async (req, res) => {
 app.get('/wordle', (req, res) => {
   res.render('pages/wordle', {user: req.session.user});
 })
+
+
+app.post('/update-wordle-stats', auth, async (req, res) => {
+  const { won } = req.body;
+  const userId = req.session.user.user_id;
+  const username = req.session.user.username;
+
+  try {
+    // Check if the user already has stats
+    const stats = await db.oneOrNone(
+      'SELECT * FROM User_Wordle_Stats WHERE user_id = $1',
+      [userId]
+    );
+
+    if (!stats) {
+      // New user, insert default values
+      await db.none(
+        `INSERT INTO User_Wordle_Stats (user_id, successful_attempts, games_played, win_streak, highest_win_streak)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [userId, won ? 1 : 0, 1, won ? 1 : 0, won ? 1 : 0]
+      );
+    } else {
+      const newGamesPlayed = stats.games_played + 1;
+      const newSuccessfulAttempts = stats.successful_attempts + (won ? 1 : 0);
+      const newWinStreak = won ? stats.win_streak + 1 : 0;
+      const newHighestStreak = Math.max(stats.highest_win_streak, newWinStreak);
+
+      await db.none(
+        `UPDATE User_Wordle_Stats
+         SET successful_attempts = $1,
+             games_played = $2,
+             win_streak = $3,
+             highest_win_streak = $4
+         WHERE user_id = $5`,
+        [newSuccessfulAttempts, newGamesPlayed, newWinStreak, newHighestStreak, userId]
+      );
+    }
+
+    // Update leaderboard
+    const leaderboard = await db.oneOrNone(
+      'SELECT * FROM Wordle_Leaderboard WHERE user_id = $1',
+      [userId]
+    );
+
+    if (!leaderboard && won) {
+      await db.none(
+        `INSERT INTO Wordle_Leaderboard (user_id, username, highest_streak)
+         VALUES ($1, $2, 1)`,
+        [userId, username]
+      );
+    } else if (won && stats && stats.win_streak + 1 > leaderboard.highest_streak) {
+      await db.none(
+        `UPDATE Wordle_Leaderboard
+         SET highest_streak = $1
+         WHERE user_id = $2`,
+        [stats.win_streak + 1, userId]
+      );
+    }
+
+    res.json({ success: true, message: 'Wordle stats updated' });
+  } catch (err) {
+    console.error('Error updating Wordle stats:', err);
+    res.status(500).json({ success: false, message: 'Error updating stats' });
+  }
+});
+
+
+
+
 
 //Whenever a guess gets made, make a call to this. This should store the guess in the server
 app.post('/saveguess', (req, res) => {
@@ -354,6 +497,25 @@ app.get('/getguess', (req, res) => {
   res.json(previousGuesses);
 });
 
+//This reads out the json file and stores its contents in wordlist
+const wordlist = JSON.parse(fs.readFileSync('src/resources/json/wordle-allowed-guesses2.json', 'utf-8'));
+
+//Wordle API for checking a guess
+app.post('/checkguess', async (req, res) => {
+  const guess = req.body.guess;
+  if(!guess){
+    return res.status(400).json({ error: 'No word provided' });
+  }
+  try{
+    //const apiResponse = await fetch(`https://api.datamuse.com/words?sp=${guess}&max=1`); //Make a request to the api
+    //const data = await apiResponse.json(); //get a response
+    //const isValid = (data.length > 0) && (data[0].word.toLowerCase() === guess.toLowerCase());
+    const isValid2 = wordlist.includes(guess.toLowerCase());
+    res.json({valid: isValid2});
+  } catch(err) {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
 //API's for Crossword
 
 // Get all puzzles

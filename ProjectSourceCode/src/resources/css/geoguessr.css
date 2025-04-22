@@ -124,10 +124,6 @@
   }
 
 
-  /* Viewer Controls */
-  
-
-
   
   /* Headers */
   h1, h2, h3 {
@@ -164,6 +160,7 @@
     .content-wrapper {
       padding: 20px;
     }
+
   }
 
   #scorecard {
@@ -208,4 +205,6 @@
   }
   
   
-  
+
+  }
+
