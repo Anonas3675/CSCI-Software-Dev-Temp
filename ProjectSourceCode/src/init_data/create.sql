@@ -1,12 +1,12 @@
 --USER INFO
 -- Table used purely to store user ids and connect the user's information and leaderboards using the id
-DROP TABLE IF EXISTS User_To_Backend;
+DROP TABLE IF EXISTS User_To_Backend CASCADE;
 CREATE TABLE User_To_Backend (
     user_id SERIAL PRIMARY KEY
 );
 
 -- Used as the main table holding user information
-DROP TABLE IF EXISTS User_Information;
+DROP TABLE IF EXISTS User_Information CASCADE;
 CREATE TABLE User_Information (
     username VARCHAR(45) PRIMARY KEY,
     user_id INT UNIQUE,
@@ -17,7 +17,7 @@ CREATE TABLE User_Information (
 
 --GEOGUESSR
 -- Uses user_id from the User_information to show user geoguessr stats
-DROP TABLE IF EXISTS User_Geoguessr_Stats;
+DROP TABLE IF EXISTS User_Geoguessr_Stats CASCADE;
 CREATE TABLE User_Geoguessr_Stats (
     user_id INT PRIMARY KEY,
     highest_score INT,
@@ -25,7 +25,7 @@ CREATE TABLE User_Geoguessr_Stats (
 );
 
 -- Shows the leaderboard for geoguessr using user_id's from User_To_Backend
-DROP TABLE IF EXISTS Geoguessr_Leaderboard;
+DROP TABLE IF EXISTS Geoguessr_Leaderboard CASCADE;
 CREATE TABLE Geoguessr_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE Geoguessr_Leaderboard (
 );
 
 -- Stores information about each possible geoguessr location, alongside the image_id for each location
-DROP TABLE IF EXISTS Geo_Guessr_Location;
+DROP TABLE IF EXISTS Geo_Guessr_Location CASCADE;
 CREATE TABLE Geo_Guessr_Location (
     location_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL, --Location Name
@@ -45,7 +45,7 @@ CREATE TABLE Geo_Guessr_Location (
 
 
 -- Stores the scores for geoguessr
-DROP TABLE IF EXISTS Geo_Guessr_Scores;
+DROP TABLE IF EXISTS Geo_Guessr_Scores CASCADE;
 CREATE TABLE Geo_Guessr_Scores (
     id INT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE Geo_Guessr_Scores (
 
 --WORDLE
 -- Uses user_id from the User_information to show user wordle stats
-DROP TABLE IF EXISTS User_Wordle_Stats;
+DROP TABLE IF EXISTS User_Wordle_Stats CASCADE;
 CREATE TABLE User_Wordle_Stats (
     user_id INT PRIMARY KEY,
     successful_attempts INT,
@@ -70,7 +70,7 @@ CREATE TABLE User_Wordle_Stats (
 );
 
 -- Shows the leaderboard for wordle using user_id's from User_To_Backend
-DROP TABLE IF EXISTS Wordle_Leaderboard;
+DROP TABLE IF EXISTS Wordle_Leaderboard CASCADE;
 CREATE TABLE Wordle_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
@@ -79,13 +79,13 @@ CREATE TABLE Wordle_Leaderboard (
 );
 
 -- Stores valid 5-letter words which the user can input as an answer
-DROP TABLE IF EXISTS Wordle_Word_Bank;
+DROP TABLE IF EXISTS Wordle_Word_Bank CASCADE;
 CREATE TABLE Wordle_Word_Bank (
     word CHAR(5) PRIMARY KEY
 );
 
 -- Determines the correct 5-letter word for the daily wordle using the date, also holds the number of guesses the user has used
-DROP TABLE IF EXISTS System_Wordle_Control;
+DROP TABLE IF EXISTS System_Wordle_Control CASCADE;
 CREATE TABLE System_Wordle_Control (
     date DATE PRIMARY KEY,
     answer CHAR(5) NOT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE System_Wordle_Control (
 
 --TRIVIA
 -- Uses user_id from the User_information to show user trivia stats
-DROP TABLE IF EXISTS User_Trivia_Stats;
+DROP TABLE IF EXISTS User_Trivia_Stats CASCADE;
 CREATE TABLE User_Trivia_Stats (
     user_id INT PRIMARY KEY,
     current_streak INT,
@@ -104,7 +104,7 @@ CREATE TABLE User_Trivia_Stats (
 );
 
 -- Shows the leaderboard for trivia using user_id's from User_To_Backend
-DROP TABLE IF EXISTS Trivia_Leaderboard;
+DROP TABLE IF EXISTS Trivia_Leaderboard CASCADE;
 CREATE TABLE Trivia_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE Trivia_Leaderboard (
 );
 
 -- Stores information about trivia questions, including the question, the correct answer, incorrect answers, and the difficulty
-DROP TABLE IF EXISTS Trivia_Question_Bank;
+DROP TABLE IF EXISTS Trivia_Question_Bank CASCADE;
 CREATE TABLE Trivia_Question_Bank (
     question_id INT PRIMARY KEY,
     question VARCHAR(200) NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE Crossword_Puzzles (
 );
 
 -- Uses user_id from the User_information to show user crossword stats
-DROP TABLE IF EXISTS User_Crossword_Stats;
+DROP TABLE IF EXISTS User_Crossword_Stats CASCADE;
 CREATE TABLE User_Crossword_Stats (
     user_id INT,
     puzzle_id INT,
@@ -148,7 +148,7 @@ CREATE TABLE User_Crossword_Stats (
 );
 
 --Shows the leaderboard for crossword using user_id's from user_to_backend
-DROP TABLE IF EXISTS Crossword_Leaderboard;
+DROP TABLE IF EXISTS Crossword_Leaderboard CASCADE;
 CREATE TABLE Crossword_Leaderboard (
     user_id INT PRIMARY KEY,
     username VARCHAR(45) NOT NULL,
