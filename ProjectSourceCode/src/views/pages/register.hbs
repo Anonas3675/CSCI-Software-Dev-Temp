@@ -1,22 +1,198 @@
-{{> message}}
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <h2 class="text-center">Register</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register | Buff Games</title>
+  <link href="https://fonts.googleapis.com/css?family=Khula:700" rel="stylesheet">
+
+  <style>
+    @font-face {
+      font-family: 'Pixelify Sans';
+      src: url('fonts/PixelifySans-Regular.ttf') format('truetype');
+    }
+
+    body {
+      background: #959595;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pixelify Sans', sans-serif;
+    }
+
+    .bg-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('img/homeBackdrop.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.6;
+      z-index: -1;
+    }
+
+    .register-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .register-card {
+      background-color: rgba(0, 0, 0, 0.75);
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+      max-width: 400px;
+      width: 100%;
+      color: white;
+      text-align: center;
+    }
+
+    .console-heading {
+      font-family: 'Pixelify Sans', sans-serif;
+      font-size: 2.2em;
+      text-align: center;
+      color: rgb(209, 186, 129);
+      margin-bottom: 30px;
+    }
+
+    .console-underscore {
+      display: inline-block;
+      position: relative;
+      top: -0.14em;
+      left: 5px;
+      color: rgb(209, 186, 129);
+    }
+
+    .register-card label {
+      display: block;
+      text-align: left;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .register-card input {
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .register-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: rgb(209, 186, 129);
+      color: black;
+      font-weight: bold;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .register-btn:hover {
+      background-color: rgb(233, 215, 160);
+      color: rgb(5, 109, 22);
+    }
+
+    .login-link {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .login-link a {
+      color: rgb(209, 186, 129);
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .hidden {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  {{> message}}
+  <div class="bg-container"></div>
+
+  <div class="register-wrapper">
+    <div class="register-card">
+      <div class="console-heading">
+        <span id="text"></span><span class="console-underscore" id="console">_</span>
+      </div>
       <form action="/register" method="POST">
-        <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input type="text" class="form-control" id="username" name="username" required />
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required />
         </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password" name="password" required />
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
         </div>
-        <button type="submit" class="btn btn-primary w-100">Register</button>
+        <button type="submit" class="register-btn">Register</button>
       </form>
-      <div class="text-center mt-3">
+
+      <div class="login-link">
         Already have an account? <a href="/login">Login</a>
       </div>
     </div>
   </div>
-</div>
+
+  <script>
+    const words = ["Register"];
+    let i = 0;
+    let offset = 0;
+    let forwards = true;
+    let skip_count = 0;
+    const skip_delay = 15;
+    const speed = 120;
+    const wordflick = function () {
+      setInterval(function () {
+        if (forwards) {
+          if (offset >= words[i].length) {
+            skip_count++;
+            if (skip_count === skip_delay) {
+              forwards = false;
+              skip_count = 0;
+            }
+          }
+        } else {
+          if (offset === 0) {
+            forwards = true;
+            i++;
+            if (i >= words.length) {
+              i = 0;
+            }
+          }
+        }
+        const part = words[i].substring(0, offset);
+        if (skip_count === 0) {
+          if (forwards) {
+            offset++;
+          } else {
+            offset--;
+          }
+        }
+        document.getElementById('text').innerText = part;
+      }, speed);
+    };
+
+    wordflick();
+
+    setInterval(function () {
+      const con = document.getElementById('console');
+      con.classList.toggle('hidden');
+    }, 400);
+  </script>
+</body>
+</html>

@@ -108,6 +108,8 @@ app.use(express.static('src/resources'));
 // TODO - Include your API routes here
 
 
+
+
 app.get('/', (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
@@ -278,7 +280,9 @@ app.post('/saveScore', async (req, res) => {
   }
 
   // Convert distance to "score" (e.g., lower is better, so maybe reverse it)
-  const newScore = Math.round(1000 - parseFloat(totalDistance) * 200); // Example scoring logic
+
+  const newScore = Math.round(1000 - parseFloat(totalDistance) * 600); // Example scoring logic
+
   const userId = req.session.user.user_id;
   const username = req.session.user.username;
   try {

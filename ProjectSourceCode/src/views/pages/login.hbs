@@ -1,23 +1,170 @@
-{{> message}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Buff Games</title>
+  <style>
+    @font-face {
+      font-family: 'Pixelify Sans';
+      src: url('fonts/PixelifySans-Regular.ttf') format('truetype');
+    }
 
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <h2 class="text-center">Login</h2>
+    @font-face {
+      font-family: 'Pixelify Sans';
+      src: url('fonts/PixelifySans-Bold.ttf') format('truetype');
+      font-weight: bold;
+    }
+
+    body {
+      font-family: 'Pixelify Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #959595;
+    }
+
+    .bg-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('img/homeBackdrop.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.6;
+      z-index: -1;
+    }
+
+    .login-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-card {
+      background-color: rgba(0, 0, 0, 0.75);
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+      max-width: 400px;
+      width: 100%;
+      color: white;
+      text-align: center;
+    }
+
+    .login-card h2 {
+      font-size: 36px;
+      margin-bottom: 30px;
+      color: rgb(209, 186, 129);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      background: #fff;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: rgb(209, 186, 129);
+      color: black;
+      font-weight: bold;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .login-btn:hover {
+      background-color: rgb(233, 215, 160);
+      color: rgb(5, 109, 22);
+    }
+
+    .register-link {
+      margin-top: 20px;
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    .register-link a {
+      color: rgb(209, 186, 129);
+      text-decoration: none;
+    }
+
+    .wave-text span {
+    display: inline-block;
+    font-size: 36px;
+    color: rgb(209, 186, 129);
+    animation: wave 1.2s ease-in-out infinite;
+  }
+
+.wave-text span:nth-child(1) { animation-delay: 0s; }
+.wave-text span:nth-child(2) { animation-delay: 0.1s; }
+.wave-text span:nth-child(3) { animation-delay: 0.2s; }
+.wave-text span:nth-child(4) { animation-delay: 0.3s; }
+.wave-text span:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-container"></div>
+
+  {{> message}}
+
+  <div class="login-wrapper">
+    <div class="login-card">
+      <h2 class="wave-text">
+  <span>L</span><span>o</span><span>g</span><span>i</span><span>n</span>
+</h2>
+
       <form action="/login" method="POST">
-        <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input type="text" class="form-control" id="username" name="username" required />
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required />
         </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password" name="password" required />
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
         </div>
-        <button type="submit" class="btn btn-primary w-100">Login</button>
+        <button type="submit" class="login-btn">Login</button>
       </form>
-      <div class="text-center mt-3">
+      <div class="register-link">
         Don't have an account? <a href="/register">Register</a>
       </div>
     </div>
   </div>
-</div>
+</body>
+</html>
