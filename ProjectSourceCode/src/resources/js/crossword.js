@@ -12,8 +12,7 @@ let selectedCell = null;
 let currentDirection = 'across';
 let currentClueNumber = null;
 
-//used to check if the user has reveal the answer so they don't gain points
-let hasRevealedAnswers = false;
+
 
 // Load available puzzles
 async function loadPuzzles() {
@@ -46,6 +45,7 @@ async function loadPuzzle(puzzleId) {
   // Make sure clues container is hidden when starting to load a new puzzle
   document.getElementById('clues-container').style.display = 'none';
   document.getElementById('crossword-container').style.display = 'none';
+  document.getElementById('puzzle-controls').style.display = 'none'; // Hide controls while loading
   
   try {
     // Fetch puzzle details
@@ -95,6 +95,7 @@ async function loadPuzzle(puzzleId) {
     // Show both containers after the puzzle is successfully loaded
     document.getElementById('clues-container').style.display = 'flex';
     document.getElementById('crossword-container').style.display = 'grid';
+    document.getElementById('puzzle-controls').style.display = 'flex'; // Show controls after puzzle loads
     
     document.getElementById('loading').style.display = 'none';
   } catch (error) {
@@ -508,17 +509,9 @@ function checkAnswers() {
   message.style.display = 'block';
   if (allCorrect) {
     hasCompleted(currentPuzzle).then(completed => {
-      if (!completed && !hasRevealedAnswers) {
+      if (!completed) {
         updateUserStreak();
         markComplete(currentPuzzle); // Mark it complete after updating streak
-      } 
-      else if (hasRevealedAnswers) {
-        console.log('Puzzle completed with revealed answers — streak not updated.');
-
-        // Still mark as complete even if revealed, just don't update streak
-        if (!completed) {
-          markComplete(currentPuzzle);
-        }
       } 
       else {
         console.log('Puzzle already completed — streak not updated.');
@@ -628,7 +621,11 @@ function getCellCorrectValue(row, col) {
 }
 
 function revealSolution() {
-  hasRevealedAnswers = true;
+  hasCompleted(currentPuzzle).then(completed => {    //if not already marked as complete mark as completed when revealed solutions
+      if (!completed) {
+        markComplete(currentPuzzle);
+      }
+  });
 
   for (let row = 0; row < gridData.length; row++) {
     for (let col = 0; col < gridData[row].length; col++) {
@@ -703,6 +700,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Make sure clues container is hidden initially
   document.getElementById('clues-container').style.display = 'none';
   document.getElementById('crossword-container').style.display = 'none';
+  document.getElementById('puzzle-controls').style.display = 'none';
+
 
   
   document.getElementById('load-puzzle-button').addEventListener('click', () => {
@@ -721,6 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Also hide the clues container when resetting
     if (!currentPuzzle) {
       document.getElementById('clues-container').style.display = 'none';
+      document.getElementById('puzzle-controls').style.display = 'none';
     }
   });
 });
