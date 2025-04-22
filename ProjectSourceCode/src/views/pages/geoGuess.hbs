@@ -305,61 +305,6 @@
       .then(data => console.log('Score saved:', data))
       .catch(error => console.error('Error saving:', error));
     }
-  });
-
-  function resetButtonState() {
-  const confirmBtn = document.getElementById('confirm-guess-btn');
-  confirmBtn.disabled = false;
-  confirmBtn.classList.remove('disabled');
-  confirmBtn.innerHTML = 'Confirm Guess';
-  isButtonCooldown = false;
-}
-
-function resetRound() {
-  currentLocation = location[Math.floor(Math.random() * location.length)];
-  viewer.setPanorama(`img/${currentLocation.file}`);
-  mapSection.style.display = 'none';
-  backBtn.style.display = 'none';
-  resultEl.innerText = "";
-  if (pinElement) pinElement.remove();
-  resetButtonState()
-}
-
-
-function endGame() {
-  const totalDistance = guessedLoc.reduce((acc, val) => acc + val, 0).toFixed(2);
-  resultEl.innerText = `\n🎉 Game over! Total distance: ${totalDistance} km`;
-  
-  // Create Play Again button
-  const playAgainBtn = document.createElement('button');
-  playAgainBtn.classList.add('btn', 'btn-success', 'mt-3', 'mx-2');
-  playAgainBtn.innerText = 'Play Again';
-  playAgainBtn.addEventListener('click', function() {
-    currentRound = 0;
-    guessedLoc = [];
-    resetRound();
-    this.remove(); // Remove the play again button
-    resultEl.innerText = '';
-  });
-  
-
-    // Append the button after the result text
-  if(playAgainBtn) playAgainBtn.remove();
-  resultEl.parentNode.insertBefore(playAgainBtn, resultEl.nextSibling);
-  
-  // Save score
-  console.log("totDist " + totalDistance);
-  fetch('/saveScore', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ totalDistance: totalDistance })
-  })
-  .then(response => response.json())
-  .then(data => console.log('Score saved:', data))
-  .catch(error => console.error('Error saving:', error));
-}
-
-</script>
-
+  </script>
 </body>
 </html>
