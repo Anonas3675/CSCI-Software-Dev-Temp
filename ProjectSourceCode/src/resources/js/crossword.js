@@ -1,3 +1,4 @@
+
 // Variables to store puzzle data
 let currentPuzzle = null;
 let gridData = [];
@@ -41,6 +42,10 @@ async function loadPuzzle(puzzleId) {
   document.getElementById('crossword-container').innerHTML = '';
   document.getElementById('across-clues').innerHTML = '';
   document.getElementById('down-clues').innerHTML = '';
+  
+  // Make sure clues container is hidden when starting to load a new puzzle
+  document.getElementById('clues-container').style.display = 'none';
+  document.getElementById('crossword-container').style.display = 'none';
   
   try {
     // Fetch puzzle details
@@ -86,6 +91,10 @@ async function loadPuzzle(puzzleId) {
     
     // Initialize the crossword grid
     initCrossword();
+    
+    // Show both containers after the puzzle is successfully loaded
+    document.getElementById('clues-container').style.display = 'flex';
+    document.getElementById('crossword-container').style.display = 'grid';
     
     document.getElementById('loading').style.display = 'none';
   } catch (error) {
@@ -649,7 +658,7 @@ function resetPuzzle() {
     cell.style.backgroundColor = 'white';
   });
   document.querySelectorAll('.cell.black').forEach(cell => {
-    cell.style.backgroundColor = 'grey';
+    cell.style.backgroundColor = '#333';
   });
   
   document.getElementById('message').style.display = 'none';
@@ -691,6 +700,11 @@ document.addEventListener('focusin', (event) => {
 document.addEventListener('DOMContentLoaded', () => {
   loadPuzzles();
   
+  // Make sure clues container is hidden initially
+  document.getElementById('clues-container').style.display = 'none';
+  document.getElementById('crossword-container').style.display = 'none';
+
+  
   document.getElementById('load-puzzle-button').addEventListener('click', () => {
     const puzzleId = document.getElementById('puzzle-select').value;
     if (puzzleId) {
@@ -702,5 +716,11 @@ document.addEventListener('DOMContentLoaded', () => {
   
   document.getElementById('check-button').addEventListener('click', checkAnswers);
   document.getElementById('reveal-button').addEventListener('click', revealSolution);
-  document.getElementById('reset-button').addEventListener('click', resetPuzzle);
+  document.getElementById('reset-button').addEventListener('click', () => {
+    resetPuzzle();
+    // Also hide the clues container when resetting
+    if (!currentPuzzle) {
+      document.getElementById('clues-container').style.display = 'none';
+    }
+  });
 });

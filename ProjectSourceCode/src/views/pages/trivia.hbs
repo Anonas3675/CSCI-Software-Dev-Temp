@@ -1,21 +1,139 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <h2 class="text-center">Trivia</h2>
-        <div class="difficulty-selector">
-            <label for="difficulty">Select Difficulty: </label>
-            <select id="difficulty" name="difficulty">
-                <option value="easy">Easy</option>
-                <option value="normal" selected>Normal</option>
-                <option value="hard">Hard</option>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trivia</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <style>
+    .bg-container {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       background-image: url('img/homeBackdrop.jpg');
+       background-size: cover;
+       background-position: center;
+       background-repeat: no-repeat;
+       opacity: 0.6;
+       z-index: -1;
+    }
+    body {
+      background-color: #f4f4f4;
+    }
+    h2 {
+      color:#f4f4f4
+    }
+    div {
+      color: #f4f4f4;
+    }
+    option {
+      background-color: rgb(209, 186, 129);
+    }
+    .card {
+      padding: 2rem;
+      border-radius: 15px;
+      background-color: rgba(0,0,0,0.6);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .answer-btn {
+      margin: 10px 0;
+      width: 100%;
+      background-color: rgb(209, 186, 129);
+    }
+    .correct { background-color: #28a745 !important; color: white; }
+    .wrong { background-color: #dc3545 !important; color: white; }
+  </style>
+  <nav></nav>
+</head>
+<body>
+  <div class="bg-container"></div>
+
+<div class="wrapper-container mt-5" padding-top="4rem"></div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card text-center">
+          <h2 class="mb-4" color="#f4f4f4">Trivia</h2>
+
+          <div class="mb-3">
+            <label for="difficulty" class="form-label">Select Difficulty:</label>
+            <select id="difficulty" class="form-select">
+              <option value="1">Easy</option>
+              <option value="2">Normal</option>
+              <option value="3">Hard</option>
             </select>
+          </div>
+
+          <div id="question-section" class="mb-4">
+            <h5 id="question-text">Click "New Question" to start!</h5>
+          </div>
+
+          <div id="answers" class="mb-3"></div>
+
+          <div class="d-grid gap-2">
+            <button id="next-btn" class="btn btn-primary">New Question</button>
+          </div>
+
+          <div id="feedback" class="mt-3 fw-bold"></div>
         </div>
-        <div class="button-container">
-            <button>Answer 1</button>
-            <button>Answer 2</button>
-            <button>Answer 3</button>
-            <button>Answer 4</button>
-        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const nextBtn = document.getElementById('next-btn');
+  const answersDiv = document.getElementById('answers');
+  const feedback = document.getElementById('feedback');
+  const questionText = document.getElementById('question-text');
+  const difficulty = document.getElementById('difficulty');
+
+  let currentAnswer = "";
+  let currentQuestionId = null;
+
+  nextBtn.addEventListener('click', async () => {
+    const diffValue = difficulty.value;
+    const res = await fetch(`/question?difficulty=${diffValue}`);
+    const data = await res.json();
+
+    const { question, question_id } = data.question;
+    currentQuestionId = question_id;
+    currentAnswer = data.question.correct_answer;
+
+    questionText.innerText = question;
+    feedback.innerText = "";
+    answersDiv.innerHTML = "";
+
+    const allAnswers = [data.question.correct_answer, data.question.incorrect_answer_1, data.question.incorrect_answer_2, data.question.incorrect_answer_3];
+    const shuffled = allAnswers.sort(() => 0.5 - Math.random());
+
+    for (const answer of shuffled) {
+      const btn = document.createElement("button");
+      btn.classList.add("btn", "btn-outline-dark", "answer-btn");
+      btn.innerText = answer;
+      btn.onclick = () => handleAnswer(answer, btn);
+      answersDiv.appendChild(btn);
+    }
+  });
+
+  async function handleAnswer(answer, button) {
+    const isCorrect = answer === currentAnswer;
+
+    button.classList.add(isCorrect ? "correct" : "wrong");
+    feedback.innerText = isCorrect ? "Correct!" : `Wrong! Correct answer was: ${currentAnswer}`;
+
+    document.querySelectorAll(".answer-btn").forEach(btn => btn.disabled = true);
+
+    await fetch('/submit-trivia-answer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correct: isCorrect })
+    });
+  }
+});
+</script>
+
+</body>
+</html>

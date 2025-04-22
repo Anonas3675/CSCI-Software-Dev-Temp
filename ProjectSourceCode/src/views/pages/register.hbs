@@ -122,6 +122,7 @@
   </style>
 </head>
 <body>
+  {{> message}}
   <div class="bg-container"></div>
 
   <div class="register-wrapper">
@@ -129,7 +130,6 @@
       <div class="console-heading">
         <span id="text"></span><span class="console-underscore" id="console">_</span>
       </div>
-
       <form action="/register" method="POST">
         <div class="form-group">
           <label for="username">Username</label>

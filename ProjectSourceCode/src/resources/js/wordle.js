@@ -7,7 +7,7 @@ var row = 0; //Incrementes each time a guess is made
 var col = 0; //current letter
 
 var gameOver = false;
-var word = "TRACE";
+var word = "SQUID";
 width = word.length;
 height = width + 1;
 
@@ -26,7 +26,7 @@ window.onload = async function(){ //This function is called when the window is l
 async function intialize(){
     //Create game board
     try{
-        document.getElementById("board").style.width = ((width*60) + 50) + 'px';
+        document.getElementById("board").style.width = ((width*65)) + 'px';
         document.getElementById("board").style.height = ((height*60) + 60) + 'px';
         const guesses = await getGuesses();
         for (let r=0; r < height; r++){
@@ -53,7 +53,7 @@ async function intialize(){
             }
         }
         //Listen for Key Press
-        document.addEventListener("keyup", (e) => {
+        document.addEventListener("keyup", async (e) => {
             if(gameOver) return;
             //alert(e.code); //e.code contains the key that was pressed. Alert causes the webrowser to send an alert to the user
             if(("KeyA" <= e.code) && (e.code <= "KeyZ")){
@@ -75,6 +75,11 @@ async function intialize(){
             }
             else if(e.code == "Enter"){
                 if (col != width) return;
+                const valid = await checkIfWord();
+                if(!valid){
+                    alert("Please enter a valid word");
+                    return;
+                }
                 update(0);
                 row +=1;
                 col = 0;
@@ -83,13 +88,59 @@ async function intialize(){
             if(!gameOver && row == height){
                 gameOver = true;
                 document.getElementById("answer").innerText = word;
-            }
+                updateWordleStats(false);
+              }
         })
     } catch(err){
         console.error('Something went wrong:', err);
     }
 
 }
+//Used to see if the word is a valid word
+async function checkIfWord(){
+    guess = "";
+    for (let c=0; c < width; c++){ //Gets the guess by from the HTML
+        let curTile = document.getElementById(row.toString() + "-" + c.toString());
+        let letter = curTile.innerText;
+        guess += letter;
+    }
+
+    try{
+        //Make a call to a function in index.js, which will then make a call to the API
+        const res = await fetch('/checkguess', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ guess })
+          });
+      
+          const data = await res.json();
+          //console.log(data); //Prints the response to the terminal
+          if(data.valid){
+            console.log(`${guess} is a valid word!`);
+            return 1;
+          } else {
+            console.log(`${guess} is not valid.`);
+            return 0;
+          }
+    } catch(err){
+        console.error('Something went wrong:', err);
+    }
+}
+
+async function updateWordleStats(didWin) {
+    try {
+      const res = await fetch('/update-wordle-stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ won: didWin })
+      });
+      const data = await res.json();
+      console.log('Wordle stats updated:', data);
+    } catch (err) {
+      console.error('Error updating Wordle stats:', err);
+    }
+  }
+  
 
 function update(intializiation){
     let correct = 0; //Used at the end to check if the word is correct
@@ -116,6 +167,9 @@ function update(intializiation){
     //Want to call update without doing this
     if(intializiation == 0){
         submitGuess(guess);
+        if(correct == width){
+            updateWordleStats(true); 
+        }
     }
     if (correct == width){
         gameOver = true;
