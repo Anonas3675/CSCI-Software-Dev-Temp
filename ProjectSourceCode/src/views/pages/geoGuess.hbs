@@ -138,7 +138,7 @@
       
       if (pinElement) pinElement.remove();
       
-      pinElement = document.createElement('img');
+      /* pinElement = document.createElement('img');
       pinElement.src = '../img/pin.jpg';
       pinElement.style.position = 'absolute';
       pinElement.style.left = `${clickX}px`;
@@ -146,11 +146,23 @@
       pinElement.style.width = '35px';
       pinElement.style.height = '25px';
       pinElement.style.transform = 'translate(1450%, -58%)';
+      pinElement.style.zIndex = '1000'; */
+
+      pinElement = document.createElement('img');
+      pinElement.src = '../img/pin.jpg';
+      pinElement.style.position = 'absolute';
+      pinElement.style.left = `${clickX }px`; // Half the width of the pin
+      pinElement.style.top = `${clickY }px`;  // Height of the pin to position the point correctly
+      pinElement.style.transform = 'translate(-50%, -100%)';
+      pinElement.style.width = 'auto';
+      pinElement.style.height = '50px'; // make sure to adjust based on your actual pin size
       pinElement.style.zIndex = '1000';
+      pinElement.style.pointerEvents = 'none';
+
 
       // remove later 
-      {{!-- document.getElementById('coords-display').innerText = 
-      `📍 Selected Location: Lat ${clickedLat.toFixed(6)}, Lon ${clickedLon.toFixed(6)}`; --}}
+      document.getElementById('coords-display').innerText = 
+      `📍 Selected Location: Lat ${clickedLat.toFixed(6)}, Lon ${clickedLon.toFixed(6)}`;
 
       
       document.getElementById('map-container').appendChild(pinElement);
@@ -167,13 +179,12 @@
 
           // Add Correct Location Pin
         const mapImg = document.getElementById('campus-map');
-        const rect = mapImg.getBoundingClientRect();
 
         const xRatioCorrect = (currentLocation.lon - MAP_BOUNDS.minLon) / (MAP_BOUNDS.maxLon - MAP_BOUNDS.minLon);
         const yRatioCorrect = (MAP_BOUNDS.maxLat - currentLocation.lat) / (MAP_BOUNDS.maxLat - MAP_BOUNDS.minLat);
 
-        const correctX = rect.width * xRatioCorrect;
-        const correctY = rect.height * yRatioCorrect;
+        const correctX = mapImg.offsetWidth * xRatioCorrect;
+        const correctY = mapImg.offsetHeight * yRatioCorrect;
 
         if (window.correctPin) window.correctPin.remove();
 
@@ -184,7 +195,7 @@
         correctPin.style.top = `${correctY}px`;
         correctPin.style.width = '32px';
         correctPin.style.height = '35px';
-        correctPin.style.transform = 'translate(1600%, -70%)';
+        correctPin.style.transform = 'translate(-50%, -100%)'; // center horizontally, point bottom tip
         correctPin.style.zIndex = '1000';
 
         document.getElementById('map-container').appendChild(correctPin);

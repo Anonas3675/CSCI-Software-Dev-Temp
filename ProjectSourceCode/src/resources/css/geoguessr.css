@@ -78,25 +78,31 @@
   }
 
   #map-container {
-    height: 60vh; /* Set a specific height instead of max-height */
-    width: 90%; /* Control the width */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: visible; /* Change from hidden to visible */
+    display: inline-block; /* shrink to fit image */
     position: relative;
+    overflow: visible;
     margin: 0 auto;
     background-color: rgba(209, 186, 129, 0.2);
     border-radius: 20px;
-    padding: 10px;
+    padding: 0; /* remove extra padding that throws off layout */
   }
+  
 
-  #campus-map {
+  /* #campus-map {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     cursor: crosshair;
     border-radius: 15px;
+  } */
+
+  #campus-map {
+    display: block;
+    width: 100%; /* OR use a fixed width like 600px if needed */
+    height: auto;
+    object-fit: contain;
+    border-radius: 15px;
+    cursor: crosshair;
   }
 
   /* Buttons - Consistent with Buff Games */
