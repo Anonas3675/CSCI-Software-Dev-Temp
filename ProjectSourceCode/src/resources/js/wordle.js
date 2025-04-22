@@ -77,7 +77,7 @@ async function intialize(){
                 if (col != width) return;
                 const valid = await checkIfWord();
                 if(!valid){
-                    alert("Please enter a valid word");
+                    
                     return;
                 }
                 update(0);
