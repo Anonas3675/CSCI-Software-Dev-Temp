@@ -461,6 +461,9 @@ app.post('/update-wordle-stats', auth, async (req, res) => {
         [stats.win_streak + 1, userId]
       );
     }
+    //Need to reset session variables for wordle here, 
+    req.session.todaysWord = ""
+    req.session.guesses = [];
 
     res.json({ success: true, message: 'Wordle stats updated' });
   } catch (err) {
@@ -468,10 +471,6 @@ app.post('/update-wordle-stats', auth, async (req, res) => {
     res.status(500).json({ success: false, message: 'Error updating stats' });
   }
 });
-
-
-
-
 
 //Whenever a guess gets made, make a call to this. This should store the guess in the server
 app.post('/saveguess', (req, res) => {
@@ -488,14 +487,22 @@ app.post('/saveguess', (req, res) => {
   res.json({ message: "Guess saved", guesses: req.session.guesses });
 });
 
-//Still need a wordle API that will handle loading perviously made guesses
-app.get('/getguess', (req, res) => {
-  const previousGuesses = req.session.guesses || [];
-  res.json(previousGuesses);
-});
-
 //This reads out the json file and stores its contents in wordlist
 const wordlist = JSON.parse(fs.readFileSync('src/resources/json/wordle-allowed-guesses2.json', 'utf-8'));
+const CUlist = JSON.parse(fs.readFileSync('src/resources/json/CU-words.json', 'utf-8'));
+
+//API that will handle loading perviously made guesses
+app.get('/getguess', (req, res) => {
+  const previousGuesses = req.session.guesses || [];
+  if(!req.session.todaysWord){ //If a word hasn't been choosen
+    
+    //req.session.todaysWord = "HELLO"; //Change this to grab a random word from json file. This should be upper case
+    req.session.todaysWord = (CUlist[Math.floor(Math.random() * CUlist.length)]).toUpperCase();
+  }
+  const currentWord = req.session.todaysWord
+  res.json({guesses: previousGuesses, word: currentWord});
+});
+
 
 //Wordle API for checking a guess
 app.post('/checkguess', async (req, res) => {
