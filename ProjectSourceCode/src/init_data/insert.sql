@@ -511,4 +511,15 @@ INSERT INTO Trivia_Question_Bank (question_id, question, correct_answer, incorre
 (2012, 'Where is the largest collection of dorms outside main campus?', 'William’s Village', 'Old Main', 'East Campus', 'Kittridge', 1),
 (2013, 'What is the name of the oldest section of CU’s campus?', 'Old main', 'East Campus', 'Central Campus', 'Old campus', 2),
 (2014, 'What is CU Boulder’s Elevation?', '5,430', '5,280', '5,060', '5,120', 3),
-(2015, 'What Ski resort does Boulder have free bus rides to?', 'Eldora', 'Winter Park', 'Keystone', 'Vail', 2);
+(2015, 'Who was the First CU Boulder student to win the Heisman trophy?', 'Rashaan Salaam', 'Byron White', 'Cliff Branch', 'Dave Logan', 3),
+(2016, 'Which head coach who led the Buffs to their first national title in 1990?', 'Bill McCartney', 'Dan Fouts', 'Rick Neuhiesel', 'Chuck Fairbanks', 3),
+(2017, 'Who is the only Colorado QB in the 1990`s to have beaten Nebraska twice?', 'Darian Hagan', 'Kordell Stewart', 'Koy Detmer', 'Mike Moschetti', 3),
+(2018, 'Who holds CU`s single season record hold for passing yards in football?', 'Mike Moschetti', 'Bobby Pesavento', 'Kordell Stewart', 'Koy Detmer', 3),
+(2019, 'Who was the first person to win a Nobel while affiliated with CU?', 'Thomas R. Cech', 'Carl Wieman', 'John Hall', 'David Wineland', 3),
+(2020, 'What annual event, held since 1930, occurs during every football game?', 'Ralpie`s Run', 'Sko Buffs Chant', 'CU Fight Song', 'Halftime Marching Band Show', 2),
+(2021, 'What is the name of the student-run newspaper at CU Boulder?', 'The CU Independent', 'Ralphie''s Rumors', 'The CU Journal', 'The Boulder Times', 2),
+(2022, 'What body of water runs through the southern part of campus near the Rec Center and Kittredge?', 'Boulder Creek', 'Cache la Poudre River', 'Yampa River', 'South Platte River', 1),
+(2023, 'What iconic building hosts many large intro classes and has a planetarium on the roof?', 'Duane Physics & Astrophysics', 'Cristol Chemistry & Biochemistry', 'Benson Earth Sciences', 'Muenzinger Psychology & Neuroscience', 2),
+(2024, 'What CU Boulder event, held every spring, encourages students to explore innovation and entrepreneurship?', 'New Venture Challenge', 'Exploring Innovation!', 'Business Experience', 'Entrepreneurship Challenge', 2),
+(2025, 'Which CU Boulder dorm is named after a famous explorer and is known for housing many first-year students?', 'Farrand Hall', 'Baker Hall', 'Libby Hall', 'Smith Hall', 3),
+(2026, 'Which CU Boulder club sports team has won multiple national championships and is considered elite among U.S. club teams?', 'Men''s and Women''s Ultimate Frisbee', 'Women''s Basketball', 'Men''s Hockey', 'Men''s and Women''s Tennis Team', 2);
