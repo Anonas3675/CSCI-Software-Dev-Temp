@@ -17,15 +17,19 @@
         <div class="games-wrapper">
             <h1 id="title" style="color: white; font-family: 'Pixelify Sans', sans-serif; font-weight: bold;">Wordle</h1>
         </div>
+        <div id="answer-wrapper" class="games-wrapper">
+            <h3 id="answer" style="color: white; font-family: 'Pixelify Sans', sans-serif; font-weight: bold;"></h3>
+            <h6 id="inform" style="color: white; font-family: 'Pixelify Sans', sans-serif; font-weight: bold;">Please enter a valid guess</h6>
+        </div>
         <br>
         <div class="games-wrapper">
             <div id="board">
 
             </div>
         </div>
-
-        <br>
-        <h1 id="answer"></h1>
+        <div class="button-container">
+            <button onclick="location.reload()" id="playAgain" class="btn-play-again">Play Again</button>
+        </div>
     </body>
 </html>
 

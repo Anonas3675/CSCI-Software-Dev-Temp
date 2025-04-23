@@ -88,3 +88,36 @@ hr {
     color: white;
     border-color: white;
 }
+
+.btn-play-again {
+    padding: 10px 20px; /* Reduced padding for a smaller button */
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #6AAA64; /* Match the "correct" color */
+    color: white;
+    border: 2px solid white;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-family: 'Pixelify Sans', Arial, Helvetica, sans-serif; /* Using your custom font */
+    display: inline-block; /* Prevent the button from stretching across the page */
+    width: auto; /* Ensure the button width is only as wide as the content */
+    text-align: center; /* Center the text inside the button */
+  }
+  
+  /* Button hover effect */
+  .btn-play-again:hover {
+    background-color: #4C7A4C; /* Darker green on hover */
+    border-color: #4C7A4C;
+  }
+  
+  /* Button active effect */
+  .btn-play-again:active {
+    transform: scale(0.98); /* Button presses slightly */
+  }
+  
+  /* Container for the button */
+  .button-container {
+    display: flex;
+    justify-content: center; /* Centers the button horizontally */
+  }

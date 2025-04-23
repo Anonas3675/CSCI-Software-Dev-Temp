@@ -26,6 +26,10 @@ window.onload = async function(){ //This function is called when the window is l
 async function intialize(){
     //Create game board
     try{
+        document.getElementById("answer-wrapper").style.display = 'none';
+        document.getElementById("playAgain").style.display = 'none';
+        document.getElementById("answer").style.display = 'none';
+        document.getElementById("inform").style.display = 'none';
         document.getElementById("board").style.width = ((width*65)) + 'px';
         document.getElementById("board").style.height = ((height*60) + 60) + 'px';
         const guesses = await getGuesses();
@@ -77,7 +81,7 @@ async function intialize(){
                 if (col != width) return;
                 const valid = await checkIfWord();
                 if(!valid){
-                    alert("Please enter a valid word");
+                    //alert("Please enter a valid word");
                     return;
                 }
                 update(0);
@@ -87,7 +91,11 @@ async function intialize(){
             
             if(!gameOver && row == height){
                 gameOver = true;
-                document.getElementById("answer").innerText = word;
+                const formatted = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                document.getElementById("answer-wrapper").style.display = 'block';
+                document.getElementById("answer").style.display = 'block';
+                document.getElementById("answer").innerText = "Correct Answer: " + formatted;
+                document.getElementById("playAgain").style.display = 'block';
                 updateWordleStats(false);
               }
         })
@@ -117,9 +125,13 @@ async function checkIfWord(){
           //console.log(data); //Prints the response to the terminal
           if(data.valid){
             console.log(`${guess} is a valid word!`);
+            document.getElementById("answer-wrapper").style.display = 'none';
+            document.getElementById("inform").style.display = 'none';
             return 1;
           } else {
             console.log(`${guess} is not valid.`);
+            document.getElementById("answer-wrapper").style.display = 'block';
+            document.getElementById("inform").style.display = 'block';
             return 0;
           }
     } catch(err){
@@ -144,23 +156,38 @@ async function updateWordleStats(didWin) {
 
 function update(intializiation){
     let correct = 0; //Used at the end to check if the word is correct
+    let wordUsed = Array(word.length).fill(false); //This contains the parts of the word that have been processes
+    let guessUsed = Array(width).fill(false); //This contains the parts of the guess that have been processed
     guess = "";
     for (let c=0; c < width; c++){ //for each letter in the current tow
         let curTile = document.getElementById(row.toString() + "-" + c.toString());
         let letter = curTile.innerText;
         guess += letter;
         
-        //If the letter is in the correct location, set class to correct
-        //If the letter is in the word (check this by iterating through word indexes) set class to present
-        //Otherwise, set class to absent
         if(word[c] == letter){
             curTile.classList.add("correct");
             correct +=1;
+            wordUsed[c] = true;
+            guessUsed[c] = true; 
         }
-        else if (word.includes(letter)){
-            curTile.classList.add("present");
+    }
+    for (let c=0; c < width; c++){
+        if (guessUsed[c]) continue;
+        let curTile = document.getElementById(row.toString() + "-" + c.toString());
+        let letter = curTile.innerText;
+        for (let i = 0; i < word.length; i++) {
+            if (!wordUsed[i] && word[i] === letter) {
+                curTile.classList.add("present");
+                wordUsed[i] = true;
+                guessUsed[c] = true;
+                break;
+            }
         }
-        else{
+    }
+    for (let c=0; c < width; c++){
+        let curTile = document.getElementById(row.toString() + "-" + c.toString());
+
+        if (!guessUsed[c]) {
             curTile.classList.add("absent");
         }
     }
@@ -173,6 +200,7 @@ function update(intializiation){
     }
     if (correct == width){
         gameOver = true;
+        document.getElementById("playAgain").style.display = 'block';
     }
 }
 
@@ -198,7 +226,8 @@ async function getGuesses() {
         const res = await fetch('/getguess');
         const data = await res.json();
         console.log(data); //Prints the response to the terminal
-        return data;
+        word = data.word;
+        return data.guesses;
     } catch(err){
       console.error('Something went wrong:', err);
       return [];
