@@ -5,13 +5,33 @@
   <title>Trivia</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
   <style>
+      @font-face {
+    font-family: 'Pixelify Sans';
+    src: url('../fonts/PixelifySans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Pixelify Sans';
+    src: url('../fonts/PixelifySans-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Pixelify Sans';
+    src: url('../fonts/PixelifySans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  }
     .bg-container {
        position: fixed;
        top: 0;
        left: 0;
        width: 100%;
        height: 100%;
-       background-image: url('img/homeBackdrop.jpg');
+       background-image: url('../img/homeBackdrop.jpg');
        background-size: cover;
        background-position: center;
        background-repeat: no-repeat;
@@ -19,9 +39,11 @@
        z-index: -1;
     }
     body {
+      font-family: 'Pixelify Sans', sans-serif;
       background-color: #959595;
     }
     h2 {
+      font-family: 'Pixelify Sans', sans-serif;
       color:#f4f4f4
     }
     div {
