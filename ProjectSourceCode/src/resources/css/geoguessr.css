@@ -29,7 +29,7 @@
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        opacity: 0.6; 
+        opacity: 0.7; 
         z-index: -1;
   }
 
@@ -38,6 +38,7 @@
     text-align: center;
     margin: 0;
     padding: 0;
+    background-color: #959595;
   }
 
   /* Navigation Bar - Consistent with Buff Games */
