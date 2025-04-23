@@ -655,7 +655,7 @@ function resetPuzzle() {
     cell.style.backgroundColor = 'white';
   });
   document.querySelectorAll('.cell.black').forEach(cell => {
-    cell.style.backgroundColor = '#333';
+    cell.style.backgroundColor = 'rgba(0, 0, 0, 0)';
   });
   
   document.getElementById('message').style.display = 'none';

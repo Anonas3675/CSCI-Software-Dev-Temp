@@ -191,7 +191,7 @@ app.post('/register', async (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy(() => {
-        res.render('pages/logout', { message: 'Logged out successfully.' });
+        res.render('pages/logout', { message: 'Logged out successfully!' });
     });
 });
 
@@ -223,9 +223,6 @@ app.get('/home', auth, async (req, res) => {
   console.log(req.session.user);
 });
 
-app.get('/profile', (req, res) => {
-  res.render('pages/profile', { user: req.session.user });
-})
 
 app.get('/scoreboard', auth, async (req, res) => {
   const type = req.query.type || 'geoguessr';
