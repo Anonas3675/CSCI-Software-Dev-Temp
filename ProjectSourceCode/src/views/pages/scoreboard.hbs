@@ -8,53 +8,105 @@
    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
    rel="stylesheet"
  />
- <style>
+<style>
    @font-face {
-     font-family: 'Pixelify Sans';
-     src: url('fonts/PixelifySans-Regular.ttf') format('truetype');
-     font-weight: normal;
-     font-style: normal;
-   }
+    font-family: 'Pixelify Sans';
+    src: url('fonts/PixelifySans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Pixelify Sans';
+    src: url('fonts/PixelifySans-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Pixelify Sans';
+    src: url('fonts/PixelifySans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  }
+  .bg-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('img/homeBackdrop.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+    z-index: -1;
+  }
+  body {
+    font-family: 'Pixelify Sans';
+    text-align: center;
+    background-color: #959595;
+    margin: 0;
+    padding: 0;
+  }
+ 
+  .scoreboard-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; 
+    padding: 0 20px;
+  }
+  .scoreboard-card {
+    background-color:#000;
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    width: auto;
+    min-width: 400px;
+    max-width: 90vw;
+    color: white;
+    text-align: center;
+  }
+  .table {
+    width: 100%;
+    border-collapse: collapse; /* Removes double borders */
+    margin-top: 20px;
+    font-size: 1rem;
+    color: rgb(209, 186, 129); /* Buffs gold */
+    table-layout: auto;
+    word-break: break-word;
+  }
+  .table th {
+    background-color: transparent !important;
+    color: rgb(209, 186, 129) !important;
+    font-weight: bold !important;
+    padding: 12px 16px !important;
+    border-bottom: 2px solid rgb(209, 186, 129) !important;
+  }
+  .table td {
+    background-color: transparent !important;
+    color: rgb(209, 186, 129) !important;
+    font-size: 1.1rem !important;
+    padding: 10px 0 !important;
+    text-align: center !important;
+    border-bottom: 2px solid rgb(209, 186, 129) !important;
+  }
+  .table tbody tr td:first-child {
+    border-left: 2px solid rgb(209, 186, 129);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
 
+  .table tbody tr td:last-child {
+    border-right: 2px solid rgb(209, 186, 129);
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
 
-   @font-face {
-     font-family: 'Pixelify Sans';
-     src: url('fonts/PixelifySans-Medium.ttf') format('truetype');
-     font-weight: 500;
-     font-style: normal;
-   }
-
-
-   @font-face {
-     font-family: 'Pixelify Sans';
-     src: url('fonts/PixelifySans-Bold.ttf') format('truetype');
-     font-weight: bold;
-     font-style: normal;
-   }
-   .bg-container {
-       position: fixed;
-       top: 0;
-       left: 0;
-       width: 100%;
-       height: 100%;
-       background-image: url('img/homeBackdrop.jpg');
-       background-size: cover;
-       background-position: center;
-       background-repeat: no-repeat;
-       opacity: 0.7;
-       z-index: -1;
-   }
-   body {
-     font-family: 'Pixelify Sans';
-     text-align: center;
-     background-color: #959595;
-     margin: 0;
-     padding: 0;
-   }
-   .table {
-     opacity: 0.8;
-   }
- </style>
+  .table tbody tr {
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 10px rgba(209, 186, 129, 0.1);
+  }
+</style>
 </head>
 
 
@@ -83,28 +135,28 @@
  </nav>
 
 
- <div class="container">
-   <h1 class="mb-4">{{title}}</h1>
-   <div class="table-responsive">
-     <table class ="table table-striped table-hover">
-       <thead class="table-dark">
-         <tr>
-           <th scope="col">Rank</th>
-           <th scope="col">Username</th>
-           <th scope="col">Score</th>
-         </tr>
-       </thead>
-       <tbody>
-         {{#each leaderboard}}
-         <tr>
-           <td>{{add @index 1}}</td>
-           <td>{{this.username}}</td>
-           <td>{{this.score}}</td>
-         </tr>
-         {{/each}}
-       </tbody>
-     </table>
-   </div>
- </div>
+ <div class="scoreboard-wrapper">
+    <div class="scoreboard-card">
+      <h1 class="scoreboard-h3">{{title}}</h1>
+      <table class ="table">
+        <thead>
+        <tr>
+          <th scope="col">Rank</th>
+          <th scope="col">Username</th>
+          <th scope="col">Score</th>
+        </tr>
+        </thead>
+        <tbody>
+          {{#each leaderboard}}
+          <tr>
+            <td class="table-cell">{{add @index 1}}</td>
+            <td class="table-cell">{{this.username}}</td>
+            <td class="table-cell">{{this.score}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </body>
 </html>
