@@ -124,10 +124,6 @@
     color: rgb(5, 109, 22);
   }
 
-  /* Viewer Controls */
-  
-
-  
 
   
   /* Headers */
@@ -142,11 +138,16 @@
   /* Result Text */
   #result {
     font-size: 24px;
-    margin: 15px 0;
-    padding: 10px;
-    background-color: rgba(209, 186, 129, 0.3);
+    margin: 15px auto;
+    padding: 15px 20px;
+    background-color: rgba(0, 0, 0, 0.85); /* darker black */
+    border: 2px solid rgb(209, 186, 129); /* Buffs gold border */
     border-radius: 10px;
+    max-width: 500px;
+    text-align: center;
+    color: rgb(209, 186, 129);
     display: none;
+    box-shadow: 0 0 15px rgba(252, 191, 6, 0.3);
   }
 
   @media (max-width: 768px) {
@@ -160,4 +161,51 @@
     .content-wrapper {
       padding: 20px;
     }
+
   }
+
+  #scorecard {
+    background-color: #000; /* Buffs black */
+    color: rgb(209, 186, 129);         /* Buffs gold */
+    border: 2px solid rgb(209, 186, 129);
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    font-size: 1.2rem;
+    box-shadow: 0 0 20px rgba(252, 191, 6, 0.3);
+  }
+  
+  #scorecard h3 {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 20px;
+    color: rgb(209, 186, 129);
+  }
+  
+  #scorecard ul {
+    padding: 0;
+    list-style: none;
+  }
+  
+  #scorecard .list-group-item {
+    background-color: transparent;
+    border: none;
+    color: rgb(209, 186, 129);
+    font-size: 1.2rem;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  #scorecard .badge {
+    font-size: 1rem;
+    background-color: rgb(209, 186, 129);
+    color: #000;
+  }
+  
+  
+
+  }
+
