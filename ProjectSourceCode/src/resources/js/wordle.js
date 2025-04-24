@@ -84,7 +84,7 @@ async function intialize(){
                     //alert("Please enter a valid word");
                     return;
                 }
-                update(0);
+                await update(0);
                 row +=1;
                 col = 0;
             }
@@ -96,7 +96,7 @@ async function intialize(){
                 document.getElementById("answer").style.display = 'block';
                 document.getElementById("answer").innerText = "Correct Answer: " + formatted;
                 document.getElementById("playAgain").style.display = 'block';
-                updateWordleStats(false);
+                await updateWordleStats(false);
               }
         })
     } catch(err){
@@ -154,7 +154,7 @@ async function updateWordleStats(didWin) {
   }
   
 
-function update(intializiation){
+async function update(intializiation){
     let correct = 0; //Used at the end to check if the word is correct
     let wordUsed = Array(word.length).fill(false); //This contains the parts of the word that have been processes
     let guessUsed = Array(width).fill(false); //This contains the parts of the guess that have been processed
@@ -191,16 +191,22 @@ function update(intializiation){
             curTile.classList.add("absent");
         }
     }
-    //Want to call update without doing this
-    if(intializiation == 0){
-        submitGuess(guess);
-        if(correct == width){
-            updateWordleStats(true); 
+
+    try{
+        //Want to call update without doing this
+        if(intializiation == 0){
+            await submitGuess(guess);
+            if(correct == width){
+                updateWordleStats(true); 
+            }
+        }
+        if (correct == width){
+            gameOver = true;
+            document.getElementById("playAgain").style.display = 'block';
         }
     }
-    if (correct == width){
-        gameOver = true;
-        document.getElementById("playAgain").style.display = 'block';
+    catch (err) {
+        console.error('Error updating Wordle stats:', err);
     }
 }
 
