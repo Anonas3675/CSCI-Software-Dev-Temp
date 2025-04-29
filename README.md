@@ -91,4 +91,3 @@ As of 4/25/2025, 4 games have been implemented, each with there own leaderboards
 - Include timed gamemodes, allowing users to compete in speed to complete the puzzles
 - Create an administrator account that can manage other accounts.
 - Add an onscreen keyboard to the wordle, allowing users to more easly track letters used, and making the game playable on mobile
-- 
