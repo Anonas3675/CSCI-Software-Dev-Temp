@@ -13,7 +13,8 @@
 - [External Links](#external-links)
 
 ## Description: 
-The Buff Games is a web-based game hub inspired by platforms like NY Times Games, designed specifically for the University of Colorado Boulder community. Our application features a collection of fun, interactive mini-games themed around CU Boulder culture, student life, and landmarks. Players can choose from multiple Boulder-inspired games, compete for high scores, and climb the global leaderboard, which tracks top performers across all games. 
+The Buff Games is a web-based game hub inspired by platforms like NY Times Games, designed specifically for the University of Colorado Boulder community. Our application features a collection of fun, interactive mini-games themed around CU Boulder culture, student life, and landmarks. Players can choose from multiple Boulder-inspired games, compete for high scores, and climb the global leaderboard, which tracks top performers across all games.
+As of 4/25/2025, 4 games have been implemented, each with there own leaderboards. Wordle (with CU themed words), CU trivia, CU crossword, and CU geoguesser. The site lets you register an account
 
 ## Contributors: 
 - [Wilson Narog](https://github.com/WHNarog)
