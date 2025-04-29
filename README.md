@@ -1,4 +1,7 @@
-# CSCI-BuffGames ![Project Logo]()
+<div style="display: flex; align-items: center; justify-content: space-between;">
+  <h1 style="margin: 0;">CSCI-BuffGames</h1>
+  <img src="BuffGamesLogo.png" alt="Buff Games Logo" style="height: 60px;" />
+</div>
 
 ## Contents
 - [Description](#description)
